@@ -13,6 +13,8 @@ The `.mat` data files in this repository are stored using Git LFS. To properly a
 
 **Do not** download the repository as a ZIP, as this will not generate proper `.mat` files.
 
+The cloning process might take a few extra seconds, but after that, everything should work properly.
+
 ---
 
 ## Overview
