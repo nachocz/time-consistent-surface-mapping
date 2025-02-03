@@ -88,8 +88,19 @@ Below is an image of the robotic setup used in the experiments:
 
 ![Robotic Setup](https://github.com/user-attachments/assets/f41b79fe-97c9-454b-b08e-2671eb367adb)
 
-## Citation
+---
+# Citation
 
-If you use this code in your research, please cite the original paper:
+The related paper can be cited as:
 
 > **[1]** I. Cuiral-Zueco and G. López-Nicolás, *"Time Consistent Surface Mapping for Deformable Object Shape Control,"* IEEE Transactions on Automation Science and Engineering, doi: [10.1109/TASE.2025.3529180](https://doi.org/10.1109/TASE.2025.3529180).
+
+- [Ignacio Cuiral-Zueco](https://nachocz.github.io/icz-cv/)
+- [Gonzalo López-Nicolás](http://webdiis.unizar.es/~glopez)
+
+# Acknowledgements
+
+This work was supported through Project REMAIN S1/1.1/E0111 (Interreg Sudoe Programme, ERDF), Project PID2021-124137OB-I00, and Project TED2021-130224B-I00 funded in part by MCIN/AEI/10.13039/501100011033, in part by the ERDF A way of making Europe, and in part by the European Union NextGenerationEU/PRTR.
+
+<img src="https://github.com/user-attachments/assets/44c6e2a3-e281-4e59-a594-fcf72769a4b9" height="100px">
+<img src="https://github.com/user-attachments/assets/ed25931c-3dc5-4db3-8c63-13883d3ef100" height="100px">
