@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Time Consistent Surface Mapping for Deformable Object Shape Control</title>
+    <link rel="stylesheet" href="css/style.css">
+    <!-- KaTeX for math rendering -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"
+        onload="renderMathInElement(document.body, {
+            delimiters: [
+                {left: '\\[', right: '\\]', display: true},
+                {left: '\\(', right: '\\)', display: false},
+                {left: '$$', right: '$$', display: true},
+                {left: '$', right: '$', display: false}
+            ],
+            throwOnError: false
+        });"></script>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Source+Serif+4:ital,wght@0,400;0,600;1,400&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+</head>
+<body>
+
+<!-- Top navigation bar -->
+<nav class="top-nav" id="topNav">
+    <div class="nav-inner">
+        <a href="index.html" class="nav-title">TIME-CONSISTENT SURFACE MAPPING FOR SHAPE CONTROL</a>
+        <div class="nav-section-select">
+            <select id="sectionSelect" onchange="if(this.value) window.location.href=this.value;">
+                <option value="index.html" selected>Home</option>
+<option value="section-1-introduction.html">1. Introduction</option>
+<option value="section-2-3Dmappingintro.html">2. Functional maps</option>
+<option value="section-3-3Dmapping.html">3. Time consistent and non-isometry robust surface mapping</option>
+<option value="section-4-sectionShapeControl.html">4. Shape control application</option>
+<option value="section-5-conclusions.html">5. Conclusions</option>
+<option value="references.html">References</option>
+            </select>
+        </div>
+        <div class="nav-links">
+            <a href="index.html">Home</a>
+            <a href="references.html">References</a>
+        </div>
+        <button class="nav-toggle" id="navToggle" aria-label="Toggle navigation">
+            <span></span><span></span><span></span>
+        </button>
+    </div>
+</nav>
+
+<!-- Hero / Paper header (only on index page) -->
+<header class="hero visible">
+    <div class="hero-inner">
+        <p class="hero-journal">IEEE T-ASE 2025</p>
+        <h1 class="hero-title">Time Consistent Surface Mapping for Deformable Object Shape Control</h1>
+        <p class="hero-authors">Ignacio Cuiral-Zueco, Gonzalo López-Nicolás</p>
+        <p class="hero-affiliations">I. Cuiral-Zueco and G. López-Nicolás are with Instituto de Investigación en Ingeniería de Aragón, Universidad de Zaragoza, Spain.  ignaciocuiral@unizar.es,  gonlopez@unizar.es.</p>
+    </div>
+</header>
+
+<!-- Main layout: sidebar + content -->
+<div class="layout">
+
+    <!-- Sidebar / Table of Contents -->
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar-inner">
+            <h3 class="sidebar-title">Contents</h3>
+            <nav class="sidebar-nav" id="toc">
+                <ul class="toc-list"><li class="toc-section "><a href="section-1-introduction.html">1. Introduction</a>
+</li>
+<li class="toc-section "><a href="section-2-3Dmappingintro.html">2. Functional maps</a>
+</li>
+<li class="toc-section "><a href="section-3-3Dmapping.html">3. Time consistent and non-isometry robust surface mapping</a>
+</li>
+<li class="toc-section "><a href="section-4-sectionShapeControl.html">4. Shape control application</a>
+</li>
+<li class="toc-section "><a href="section-5-conclusions.html">5. Conclusions</a>
+</li></ul>
+            </nav>
+            <div class="sidebar-refs">
+                <a href="references.html" class="sidebar-refs-link">References</a>
+            </div>
+        </div>
+    </aside>
+
+    <!-- Main content area -->
+    <main class="content">
+        
+            
+            <div class="cite-block">
+                <h3 class="cite-block-title">Cite this paper</h3>
+                <div class="cite-tab-row">
+                    <button class="cite-tab active" data-target="cite-text">Text</button>
+                    <button class="cite-tab" data-target="cite-bib">BibTeX</button>
+                </div>
+                <div class="cite-panel" id="cite-text">
+                    <p class="cite-text-content">I. Cuiral-Zueco and G. López-Nicolás, &ldquo;Time Consistent Surface Mapping for Deformable Object Shape Control&rdquo;, in <em>IEEE Transactions on Automation Science and Engineering</em>, vol.&nbsp;22, pp.&nbsp;11099-11111, 2025, <a href="https://doi.org/10.1109/TASE.2025.3529180" target="_blank">doi:&nbsp;10.1109/TASE.2025.3529180</a>.</p>
+                    <button class="cite-copy-btn" data-clip="cite-text-content" title="Copy to clipboard">Copy</button>
+                </div>
+                <div class="cite-panel" id="cite-bib" style="display:none;">
+                    <pre class="cite-bibtex-content">@ARTICLE{10839391,
+  author = {Cuiral-Zueco, Ignacio and López-Nicolás, Gonzalo},
+  title = {Time Consistent Surface Mapping for Deformable Object Shape Control},
+  journal = {IEEE Transactions on Automation Science and Engineering},
+  year = {2025},
+  volume = {22},
+  pages = {11099-11111},
+  doi = {10.1109/TASE.2025.3529180},
+  keywords = {Shape;Shape control;Surface treatment;Three-dimensional displays;Deformation;Visualization;Surface texture;Robots;Geometry;Cameras;Shape control;robot vision systems;multiple manipulators;deformable object manipulation}
+}</pre>
+                    <button class="cite-copy-btn" data-clip="cite-bibtex-content" title="Copy to clipboard">Copy</button>
+                </div>
+            </div>
+            <section class="abstract-section" id="abstract">
+                <h2 class="section-heading">Abstract</h2>
+                <div class="abstract-text">Shape control involves deforming objects to achieve a desired shape. One of the main challenges of this task is to define a suitable control reference, especially when 3D objects that lack distinctive visual texture and geometric features are involved. This paper addresses the problem of generating a suitable shape control reference using surface maps for 3D texture-less objects. The proposed surface mapping method is based on functional maps and ensures time consistency with robustness to non-isometries. Our time consistent method is validated within a shape control strategy, where local exponential stability analysis is provided. The effectiveness of the framework is illustrated through simulations and experiments.</div>
+            </section>
+            
+            <hr class="section-divider">
+            <section id="video">
+                <h2 class="section-heading">Video</h2>
+                <div class="video-container">
+                    <iframe src="https://www.youtube.com/embed/tWMJCbUwZOM"
+                            title="Paper video" frameborder="0"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                            allowfullscreen></iframe>
+                </div>
+            </section>
+            <hr class="section-divider">
+            <section id="overview">
+                <h2 class="section-heading">Sections Overview</h2>
+                <ul class="overview-list"><li><a href="section-1-introduction.html"><strong>Section 1.</strong> Introduction</a></li>
+<li><a href="section-2-3Dmappingintro.html"><strong>Section 2.</strong> Functional maps</a></li>
+<li><a href="section-3-3Dmapping.html"><strong>Section 3.</strong> Time consistent and non-isometry robust surface mapping</a></li>
+<li><a href="section-4-sectionShapeControl.html"><strong>Section 4.</strong> Shape control application</a></li>
+<li><a href="section-5-conclusions.html"><strong>Section 5.</strong> Conclusions</a></li></ul>
+            </section>
+            
+            <hr class="section-divider">
+            <section id="acknowledgements">
+                <h2 class="section-heading">Acknowledgements</h2>
+                <div class="section-body">
+                    <p>This work was supported via project REMAIN S1/1.1/E0111 (Interreg Sudoe Programme, ERDF) and projects PID2021-124137OB-I00 and TED2021-130224B-I00 funded by MCIN/AEI/10.13039/501100011033, by ERDF A
+way of making Europe and by the European Union NextGenerationEU/PRTR.</p>
+                </div>
+            </section>
+            
+            <hr class="section-divider">
+            <section id="authors">
+                <h2 class="section-heading">Authors</h2>
+                <div class="section-body">
+                    <ul style="list-style: none; padding: 0;">
+                        <li style="margin-bottom: 8px;"><a href="https://nachocz.github.io/ignacio-cuiral-zueco.github.io/" target="_blank" style="color: var(--color-primary); text-decoration: none; font-family: var(--font-sans); font-weight: 500;">Ignacio Cuiral-Zueco</a></li><li style="margin-bottom: 8px;"><a href="http://webdiis.unizar.es/~glopez" target="_blank" style="color: var(--color-primary); text-decoration: none; font-family: var(--font-sans); font-weight: 500;">Gonzalo López-Nicolás</a></li>
+                    </ul>
+                </div>
+            </section>
+        
+
+        <!-- Prev / Next navigation -->
+        <div class="page-nav">
+            
+            <a href="section-1-introduction.html" class="nav-btn next-btn">Next: 1. Introduction →</a>
+        </div>
+    </main>
+</div>
+
+<!-- Back to top button -->
+<button class="back-to-top" id="backToTop" aria-label="Back to top">↑</button>
+
+<!-- Scripts -->
+<script src="js/main.js"></script>
+
+</body>
+</html>

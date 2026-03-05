@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>4. Shape control application — Time Consistent Surface Mapping for Deformable Object Shape Control</title>
+    <link rel="stylesheet" href="css/style.css">
+    <!-- KaTeX for math rendering -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"
+        onload="renderMathInElement(document.body, {
+            delimiters: [
+                {left: '\\[', right: '\\]', display: true},
+                {left: '\\(', right: '\\)', display: false},
+                {left: '$$', right: '$$', display: true},
+                {left: '$', right: '$', display: false}
+            ],
+            throwOnError: false
+        });"></script>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Source+Serif+4:ital,wght@0,400;0,600;1,400&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+</head>
+<body>
+
+<!-- Top navigation bar -->
+<nav class="top-nav" id="topNav">
+    <div class="nav-inner">
+        <a href="index.html" class="nav-title">TIME-CONSISTENT SURFACE MAPPING FOR SHAPE CONTROL</a>
+        <div class="nav-section-select">
+            <select id="sectionSelect" onchange="if(this.value) window.location.href=this.value;">
+                <option value="index.html">Home</option>
+<option value="section-1-introduction.html">1. Introduction</option>
+<option value="section-2-3Dmappingintro.html">2. Functional maps</option>
+<option value="section-3-3Dmapping.html">3. Time consistent and non-isometry robust surface mapping</option>
+<option value="section-4-sectionShapeControl.html" selected>4. Shape control application</option>
+<option value="section-5-conclusions.html">5. Conclusions</option>
+<option value="references.html">References</option>
+            </select>
+        </div>
+        <div class="nav-links">
+            <a href="index.html">Home</a>
+            <a href="references.html">References</a>
+        </div>
+        <button class="nav-toggle" id="navToggle" aria-label="Toggle navigation">
+            <span></span><span></span><span></span>
+        </button>
+    </div>
+</nav>
+
+<!-- Hero / Paper header (only on index page) -->
+<header class="hero hidden">
+    <div class="hero-inner">
+        <p class="hero-journal">IEEE T-ASE 2025</p>
+        <h1 class="hero-title">Time Consistent Surface Mapping for Deformable Object Shape Control</h1>
+        <p class="hero-authors">Ignacio Cuiral-Zueco, Gonzalo López-Nicolás</p>
+        <p class="hero-affiliations">I. Cuiral-Zueco and G. López-Nicolás are with Instituto de Investigación en Ingeniería de Aragón, Universidad de Zaragoza, Spain.  ignaciocuiral@unizar.es,  gonlopez@unizar.es.</p>
+    </div>
+</header>
+
+<!-- Main layout: sidebar + content -->
+<div class="layout">
+
+    <!-- Sidebar / Table of Contents -->
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar-inner">
+            <h3 class="sidebar-title">Contents</h3>
+            <nav class="sidebar-nav" id="toc">
+                <ul class="toc-list"><li class="toc-section "><a href="section-1-introduction.html">1. Introduction</a>
+</li>
+<li class="toc-section "><a href="section-2-3Dmappingintro.html">2. Functional maps</a>
+</li>
+<li class="toc-section "><a href="section-3-3Dmapping.html">3. Time consistent and non-isometry robust surface mapping</a>
+</li>
+<li class="toc-section active"><a href="section-4-sectionShapeControl.html">4. Shape control application</a>
+<ul>
+<li class="toc-subsection"><a href="#control-law">4.1. Control law</a>
+</li>
+<li class="toc-subsection"><a href="#sectionSimulations">4.2. Simulation results</a>
+</li>
+<li class="toc-subsection"><a href="#section:experiments">4.3. Experiments</a>
+<ul>
+<li class="toc-subsubsection"><a href="#mexican-hat-fig-reffigexphat">4.3.1. Mexican hat (Fig. 10)</a></li>
+<li class="toc-subsubsection"><a href="#pool-noodle-fig-reffigexpchurro">4.3.2. Pool noodle (Fig. 11)</a></li>
+<li class="toc-subsubsection"><a href="#pillow-fig-reffigexppillow">4.3.3. Pillow (Fig. 12)</a></li>
+<li class="toc-subsubsection"><a href="#rectangular-foam-sheet-fig-reffigexprectangle">4.3.4. Rectangular foam sheet (Fig. 13)</a></li>
+<li class="toc-subsubsection"><a href="#section:foamcutout">4.3.5. Foam cut-out (Fig. 14)</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toc-section "><a href="section-5-conclusions.html">5. Conclusions</a>
+</li></ul>
+            </nav>
+            <div class="sidebar-refs">
+                <a href="references.html" class="sidebar-refs-link">References</a>
+            </div>
+        </div>
+    </aside>
+
+    <!-- Main content area -->
+    <main class="content">
+        <section class="section-content"><h2 id="sectionShapeControl" class="section-heading"><span class="sec-num">4</span> Shape control application</h2>
+<div class="section-body"><p>In this section, we validate our proposed method for time-consistent surface mapping (presented in section <a href="section-3-3Dmapping.html#3Dmapping" class="ref">3</a>) within a shape control framework. Laplace-based eigenbases are useful for solving surface mapping, as they are invariant to isometries. However, this same characteristic makes them inappropriate for defining an error metric within the shape control context: different configurations of the 3D embedding can share the same intrinsic features (e.g. aspects such as concavity or convexity may not be distinguishable). We therefore propose defining a shape error based on extrinsic tracked point positions \(\mathbf{X}(k)\) from (<a href="section-3-3Dmapping.html#eq:objecttrackedpoints" class="ref">15</a>), the target shape nodes \(\mathbf{Y}\), and our computed maps \(\Pi(k)\). We define a shape error in matrix form as</p><p><span id="eq:generalError"></span>\[
+    \mathbf{E}(k)=\mathbf{X}(k)-\Pi(k)\mathbf{Y},\,
+    \tag{20}
+\]
+with \(\mathbf{E}(k)\in\mathbb{R}^{M\times 3}\). Rearranging \(\mathbf{E}(k)\) in column form, we define the error vector \(\mathbf{e}(k)\in\mathbb{R}^{3M}\):</p><p><span id="eq:errorvec"></span>\[
+    \mathbf{e}(k)=[\mathbf{e}^\intercal_1(k),\dots, \mathbf{e}^\intercal_m(k), \dots, \mathbf{e}^\intercal_M(k)]^\intercal,
+    \tag{21}
+\]
+being \(\mathbf{e}_m(k)\in\mathbb{R}^3\) the error vector of the \(m\)-th surface point.</p></div>
+<h3 id="control-law" class="section-heading"><span class="sec-num">4.1</span> Control law</h3>
+<div class="section-body"><p>We now present the robot-based shape control law for reducing \(\left \|\mathbf{e}\right\|=\sqrt{\mathbf{e}^\intercal\mathbf{e}}\) and thus bringing a deformable object shape closer to the desired target shape (<a href="#fig:control_scheme" class="figref">Fig.&nbsp;7</a>). The robot setup involves grippers \(g=1,...,G\) that can perform 6 degrees of freedom actions \(\mathbf{u}_g=(\Delta \mathbf{t}^\intercal_g,\Delta\mathbf{r}^\intercal_g)^\intercal\), where \(\Delta \mathbf{t}_g\in \mathbb{R}^3\) is the translation increment and \(\Delta \mathbf{r}_g\in \mathbb{R}^3\) is the change in orientation represented with the Rodrigues&#x27; rotation vector. We rearrange \(\mathbf{X}(k)\) to define the column vector \(\mathbf{x}(k)\in \mathbb{R}^{3M}\) and its variation along iterations \(\Delta \mathbf{x}(k)=\mathbf{x}(k)-\mathbf{x}(k-1) ,\,\Delta \mathbf{x}(k)\in \mathbb{R}^{3M}\). If we actuate the grippers simultaneously, we cannot estimate the contribution to \(\Delta \mathbf{x}(k)\) that each gripper generates. For this reason, we propose operating them sequentially.</p><p>In order to design our control law, we define two data buffers (or historic information) for each gripper. One contains previous gripper \(g\) actions as \(\mathbf{U}_g(k)=(\mathbf{u}^1_g,...,\mathbf{u}^b_g,...,\mathbf{u}^B_g),\mathbf{U}_g(k)\in\mathbb{R}^{6\times B}\), being \(b=1,...,B\) the buffer index and \(B\in\mathbb{N},B\geq 6\) the buffer size. The other data buffer contains the change in the state (i.e. \(\Delta \mathbf{x}\)) that each action \(\mathbf{u}^b_g\) has generated, i.e. \(\Delta\mathbf{X}_g(k)=(\Delta \mathbf{x}^1_g,...,\Delta \mathbf{x}^b_g,...,\Delta \mathbf{x}^B_g),\Delta\mathbf{X}_g(k)\in\mathbb{R}^{3M\times B}\). Grippers actuate sequentially and thus buffers (note that they depend on \(k\)) are updated cyclically, i.e. each iteration \(k\) a different gripper actuates the system and thus its data buffer is updated. Buffers are updated by removing the oldest measurement \(B\), shifting all the remaining measurements one position and adding the new measurements as \(\mathbf{u}^1_g=\mathbf{u}_g(k)\) and \(\Delta \mathbf{x}^1_g=\Delta\mathbf{x}(k)\). The initialization of the buffers is performed by actuating \(B\geq 6\) times each gripper individually with small actions that ensure small deformations and full rank of \(\mathbf{U}_g(k=1)\).</p><p>We use the data buffers to estimate an interaction matrix \(\mathbf{L}_g\in\mathbb{R}^{3M\times 6}\) that defines the dynamics of the system as 
+<span id="eq:systemdynamics"></span>\[
+\Delta \mathbf{x}=\mathbf{L}_g\mathbf{u}_g.
+\tag{22}
+\]</p><p>The estimation is:
+<span id="eq:interactionMat"></span>\[
+\hat{\mathbf{L}}_g=\Delta\mathbf{X}_g\mathbf{U}^{\intercal}_g\left( \mathbf{U}_g\mathbf{U}^{\intercal}_g-\gamma\mathbf{I}_{6} \right)^{-1},
+    \tag{23}
+\]
+where, for clarity, dependence on \(k\) has been omitted. Parameter \(\gamma&gt;0\) (\(\gamma\) very small) is the Tikhonov&#x27;s regularisation parameter and enhances the system&#x27;s stability in those cases in which \(\mathbf{U}_g\mathbf{U}^{\intercal}_g\) happens to be near-singular. Matrix \(\hat{\mathbf{L}}_g(k)\in\mathbb{R}^{3M\times 6}\) allows us to define the control law by using its left pseudo-inverse \(\hat{\mathbf{L}}^{+}_g\in\mathbb{R}^{6\times 3M}\):
+<span id="eq:controlaw"></span>\[
+    \mathbf{u}_g=-\alpha\hat{\mathbf{L}}^{+}_g\mathbf{e},
+    \tag{24}
+\]
+where \(\alpha&gt;0\) is the control gain. For good-enough estimations of \(\mathbf{L}\) and considering \(\Pi(k)\) in (<a href="#eq:generalError" class="ref">20</a>) is a time-consistent selector matrix of static reference points \(\mathbf{Y}\), the error dynamics are obtained by substituting (<a href="#eq:controlaw" class="ref">24</a>) in (<a href="#eq:systemdynamics" class="ref">22</a>):
+\[
+\Delta\mathbf{e}=\Delta\mathbf{x}=-\alpha{\mathbf{L}}_g\hat{\mathbf{L}}^{+}_g\mathbf{e}=-\alpha\mathbf{e},
+\]
+and thus we conclude local exponential stability.</p><figure class="survey-figure" id="fig:control_scheme">
+<img src="img/control_scheme.png" alt="Figure" loading="lazy">
+<figcaption><strong>Figure 7.</strong> Control scheme that shows how data buffers \(\mathbf{U}_g(k)\) and \(\Delta\mathbf{X}_g(k)\) are updated when gripper \(g\) is actuated. Our proposed time consistent tracked points \(\mathbf{X}(k)\) and surface maps \(\Pi(k)\) are key in the definition of our control law and shape error \(\mathbf{e}(k)\).
+</figcaption>
+</figure></div>
+<h3 id="sectionSimulations" class="section-heading"><span class="sec-num">4.2</span> Simulation results</h3>
+<div class="section-body"><figure class="survey-figure" id="fig:results_fig">
+<img src="img/results_figure.png" alt="Figure" loading="lazy">
+<figcaption><strong>Figure 8.</strong> Results of 4 different shape deformation simulations. For each simulation, the initial, final, and target shapes are depicted (left to right). Underneath them, a plot shows the error \(\left\|\mathbf{e}\right\|\) (left axis, in red) and the evolution of the error that would result from applying ZoomOut directly (without our time consistent approach), i.e. \(\left\|\mathbf{e}_{NTC}\right\|\) (right axis, in blue).</figcaption>
+</figure><p>We performed several tests using the ARAP (<a href="references.html#ref-sorkine2007rigid" class="citation" title="As-rigid-as-possible surface modeling">Sorkine and Alexa, 2007</a>) deformation model to compute the object evolution. In <a href="#fig:results_fig" class="figref">Fig.&nbsp;8</a>, we present two simulations with synthetic shapes generated using Blender (both the initial and the target shapes) and two simulations that involve shapes obtained from real data: the duck is obtained from RGB-D images whereas the sea star is obtained from 3D scanner data. All used meshes contain around \(100\) to \(500\) nodes. In each simulation result we begin by showing the initial, final and target shape configurations (first three elements).</p><p>The plots in <a href="#fig:results_fig" class="figref">Fig.&nbsp;8</a> present the error \(\left \| \mathbf{e} \right\|\) evolution (left axis) along with another error \(\left\| \mathbf{e}_{NTC}\right\|\) (right axis, note the different scale). Error \(\left\| \mathbf{e}_{NTC}\right\|\) (non-time-consistent error) illustrates the evolution of the error according to the ZoomOut mapping method (<a href="references.html#ref-melzi2019zoomout" class="citation" title="ZoomOut: spectral upsampling for efficient shape correspondence">Melzi et al., 2019</a>). That is, the ZoomOut surface maps (not time-consistent) have been computed on surface data recorded from the simulations and experiments. Such simulations and experiments have been performed by feeding control law (<a href="#eq:controlaw" class="ref">24</a>) with the error \(\mathbf{e}\) in (<a href="#eq:errorvec" class="ref">21</a>), generated through our time-consistent mapping method. No shape control has been performed with error \(\mathbf{e}_{NTC}\) generated from ZoomOut maps, as its discontinuities and time inconsistencies do not allow the computation of deformation Jacobians nor provide a continuous and consistent error signal.  Note that our mapping comparisons with ZoomOut are not a standard bench-marking evaluation, as ZoomOut was not created to achieve time consistency nor to deal with non-synthetic data. Instead, our goal is to underscore the significance of time consistency and robustness of surface maps for shape control and to demonstrate that our method meets these requirements as it allows for the computation of (<a href="#eq:interactionMat" class="ref">23</a>) and provides a proper error signal for (<a href="#eq:controlaw" class="ref">24</a>). The simulations along with their associated action plots are shown in the <strong>accompanying video</strong>.</p><p>In the simulations, note how the proposed control reference \(\left\| \mathbf{e}\right\|\) is smooth and continuous (deformable objects constitute highly under-actuated systems and thus \(\left\| \mathbf{e}\right\|\) does not usually reach zero). On the other hand, error \(\left\| \mathbf{e}_{NTC}\right\|\) presents discontinuities and noisy behaviour, leading to the conclusion that the control reference it represents would not be suitable for a shape control law. It is interesting to see how in the first experiment (top left) in <a href="#fig:results_fig" class="figref">Fig.&nbsp;8</a>, \(\left\| \mathbf{e}_{NTC}\right\|\) still manages to stabilise at certain times, however, it remains around larger error values (\(\sim 100 \) [m]) until the shape has almost converged to the solution. The second simulation (top right) presents more complex symmetries (axial-wise) and thus \(\left\| \mathbf{e}_{NTC}\right\|\) oscillates around a relatively small range of values. The third simulation in <a href="#fig:results_fig" class="figref">Fig.&nbsp;8</a> (bottom left) presents certain stability of \(\left\| \mathbf{e}_{NTC}\right\|\) at the beginning as, at a certain range, \(\left\| \mathbf{e}_{NTC}\right\|\) is coincident with \(\left\| \mathbf{e}\right\|\) (axes have different scales). However, large discontinuous oscillations appear during the rest of the deformation process. The fourth simulation (bottom right) presented in <a href="#fig:results_fig" class="figref">Fig.&nbsp;8</a> begins with a highly symmetric shape (radial symmetry), however, as the deforming shape gets closer to the target shape (which presents fewer symmetries), \(\left\| \mathbf{e}_{NTC}\right\|\) presents discontinuities in a narrower range of values. Note that the axis of \(\left\| \mathbf{e}_{NTC}\right\|\) contains large values compared to that of \(\left\| \mathbf{e}\right\|\). This is due to the fact that, without the time-consistent approach, functional maps might be inverting, flipping or rotating the shape mapping completely between iterations and thus generating large variations in distances between matched points in the 3D embedding.</p><figure class="survey-figure" id="fig:stats">
+<img src="img/experiment-stats.png" alt="Figure" loading="lazy">
+<figcaption><strong>Figure 9.</strong> Processing frequency (top box plots) and number of nodes processed \(M_{\mathrm{ret}}\) (bottom histogram) for each experiment. The top plot compares the processing frequency distribution for the non-time-consistent method (blue and dashed contour boxes) with our method&#x27;s (red).</figcaption>
+</figure></div>
+<h3 id="section:experiments" class="section-heading"><span class="sec-num">4.3</span> Experiments</h3>
+<div class="section-body"><figure class="survey-figure" id="fig:exp_hat">
+<img src="img/exp1.png" alt="Figure" loading="lazy">
+<figcaption><strong>Figure 10.</strong> Experiment: Mexican hat (see <a href="#section:experiments" class="secref">Section&nbsp;4.3</a>).</figcaption>
+</figure><p>This section describes five experiments involving the manipulation of objects with different shapes and materials. The setup (outlined in <a href="section-1-introduction.html#fig:approach-scheme" class="figref">Fig.&nbsp;1</a>) includes two ABB IRB120 industrial robots with pneumatic grippers, a diffused light source, and an Intel Realsense D415 RGB-D camera. Objects are retrieved using colour-based segmentation in the CieLAB colour space; the first homogeneously sampled object points constitute the points to be tracked in subsequent iterations (i.e., \(\mathbf{X}(k=1)=\mathbf{X}_{ret}(k=1)\)). To ensure that the target shapes were feasible given the robot&#x27;s workspace limitations, they were pre-acquired by teleoperating the robots. The code was implemented using Matlab R2022b, and the computer-to-robot communication was established via TCP/IP protocol. The experiments were conducted on an Intel(R) Core(TM) i7-8565U CPU with 1.99&nbsp;GHz and 16&nbsp;GB of RAM.</p><p>The experiments are illustrated in <a href="#fig:stats" class="figref">Fig.&nbsp;9</a> to <a href="#fig:exp_cutout_case_study" class="ref">15</a>, where <a href="#fig:stats" class="figref">Fig.&nbsp;9</a> and <a href="#fig:exp_cutout_case_study" class="ref">15</a> show comparative analysis and <a href="#fig:exp_hat" class="figref">Fig.&nbsp;10</a> to <a href="#fig:exp_cutout" class="ref">14</a> presents the experiments showing the same element distribution. On the top left, three meshes depict the initial, final, and target shape, along with the surface maps generated by our proposed method (colour map on the mesh). The same three meshes are shown in different colours (gray, red, and blue) and from three different viewpoints (front, side, and top) in the top right corner. On the bottom left, an image sequence displays the segmentation of the object on the acquired RGB images. Nearby the RGB images, the surface maps obtained using the ZoomOut method (\(\Pi_{NTC}\)) and our proposed method (\(\Pi\)) are depicted on the different state meshes as colour maps. On the right, three plots illustrate the evolution of the control process. Similar to the error plots in the simulations, the first plot on the right shows the evolution of the error associated with our mapping method, i.e., \(\left\| \mathbf{e}\right\|\) (left axis, red), and the error associated with the non-time-consistent maps \(\Pi_{NTC}\), i.e., \(\left\|  \mathbf{e}_{NTC}\right\|\) (right axis, dashed blue line, note the different scale). Below the error plot, two action plots, one for the translation component and the other for the rotation component of the action, display the evolution of actions \(\mathbf{u}_g=(\Delta \mathbf{t}^\intercal_g,\Delta\mathbf{r}^\intercal_g)^\intercal\) for both robots (\(x,y\) and \(z\) components of translation and rotations depicted in red, green, and blue respectively). For a better understanding of the experiments, these results are presented in the <strong>attached video</strong>.</p><p><a href="#fig:stats" class="figref">Fig.&nbsp;9</a> provides information on the processing frequency and the number of nodes processed in each experiment. Our method is more complex, which leads to a lower processing frequency as compared to the non-time-consistent method. However, it is worth noting that, in our method, all the processed frames stay over the minimum frequency of 5&nbsp;[Hz] (value highlighted with a dotted line in the figure). In those sequences of \(M_{\mathrm{ret}}\approx 400\) (e.g., the pool noodle, the pillow, and the foam cut-out), sometimes the processing frequency rises up to 15&nbsp;[Hz].</p><figure class="survey-figure" id="fig:exp_churro">
+<img src="img/exp2.png" alt="Figure" loading="lazy">
+<figcaption><strong>Figure 11.</strong> Experiment: pool noodle (see <a href="#section:experiments" class="secref">Section&nbsp;4.3</a>).</figcaption>
+</figure></div>
+<h4 id="mexican-hat-fig-reffigexphat" class="section-heading"><span class="sec-num">4.3.1</span> Mexican hat (Fig. 10)</h4>
+<div class="section-body"><p>The flat object used in this experiment serves as an excellent example of a texture-less object that requires a 3D analysis method like the one proposed in this paper. This object lacks visual texture and has limited geometry defining features due to its radial symmetry, which makes it unsuitable for methods that rely on extracting 3D features. In this particular experiment, only the right gripper is active (the left gripper is fixed, as it is near a singular robot configuration). Despite these challenges, our proposed method successfully manipulates the hat towards the desired target shape. Note how the time inconsistent maps (obtained from directly applying ZoomOut at each iteration) not only lead to large variations derived from the symmetries of the shape but also find difficulties in converging to a map with proper continuity (see iterations \(k=52\) and \(k=196\)).</p><figure class="survey-figure" id="fig:exp_pillow">
+<img src="img/exp3.png" alt="Figure" loading="lazy">
+<figcaption><strong>Figure 12.</strong> Experiment: pillow (see <a href="#section:experiments" class="secref">Section&nbsp;4.3</a>).</figcaption>
+</figure></div>
+<h4 id="pool-noodle-fig-reffigexpchurro" class="section-heading"><span class="sec-num">4.3.2</span> Pool noodle (Fig. 11)</h4>
+<div class="section-body">This experiment presents a challenging sensing scenario due to the limitations of the RGB-D camera. Object points around the visual contour of the noodle, given its rounded profile, constitute slanted surfaces that greatly hamper the extraction of 3D information and lead to noisy information. Furthermore, the thin (elongated) shape of the noodle results in a high proportion of the object&#x27;s retrieved information being noisy (it has a high contour-to-area ratio). This is reflected in the histogram in <a href="#fig:stats" class="figref">Fig.&nbsp;9</a>, as it reveals a non-uniform distribution of the number of retrieved points \(M_{\mathrm{ret}}\) characterised by two clusters. Nevertheless, our time-consistent mapping method performs satisfactorily, allowing the shape control law to significantly reduce the error. In contrast, the time-inconsistent mapping method, which deals with the object&#x27;s vertical symmetry and large amounts of noise, leads to map discontinuities and a highly varying error that ranges from 10 to almost 60 [m] in some cases.</div>
+<h4 id="pillow-fig-reffigexppillow" class="section-heading"><span class="sec-num">4.3.3</span> Pillow (Fig. 12)</h4>
+<div class="section-body"><p>The initial shape of the pillow, as it presents a certain inclination with respect to the camera, leads to temporary gaps on both sides of the pillow&#x27;s associated mesh. This poses a challenge for the generation of surface maps, as there can be large variations of area or mesh shapes between consecutive iterations. Our time consistent mapping method handles this difficulty properly. The error \(\left\| \mathbf{e}\right\|\) appears noisier in this experiment due to the smaller range of values covered by the error plot and the similarity in scale between the camera noise, mesh variations, and error values.</p><figure class="survey-figure" id="fig:exp_rectangle">
+<img src="img/exp4.png" alt="Figure" loading="lazy">
+<figcaption><strong>Figure 13.</strong> Experiment: foam rectangular sheet (see <a href="#section:experiments" class="secref">Section&nbsp;4.3</a>).</figcaption>
+</figure></div>
+<h4 id="rectangular-foam-sheet-fig-reffigexprectangle" class="section-heading"><span class="sec-num">4.3.4</span> Rectangular foam sheet (Fig. 13)</h4>
+<div class="section-body"><p>This shape&#x27;s symmetries (with four 90º corners and straight sides) pose a challenge for surface mapping. The time inconsistent method struggles to converge to a continuous map, with discontinuities at certain frames (e.g., \(k=96\) or \(k=203\) in the sequence). Even when producing continuous maps, it oscillates between symmetric solutions (e.g., \(k=22\) versus \(k=48\)). In this experiment, although our mapping method works properly, the proposed control law does not converge as effectively as in other experiments. See on the top right meshes that a significant portion of the final mesh does not overlap with the target mesh. This is due to the local nature of the Jacobian estimation that, although being updated, remains a rough estimation of the object&#x27;s complex non-linear deformable behaviour.</p><figure class="survey-figure" id="fig:exp_cutout">
+<img src="img/exp5.png" alt="Figure" loading="lazy">
+<figcaption><strong>Figure 14.</strong> Experiment: foam cut-out (see <a href="#section:experiments" class="secref">Section&nbsp;4.3</a>).</figcaption>
+</figure><figure class="survey-figure" id="fig:exp_cutout_case_study">
+<img src="img/new-figure-TASE-results.png" alt="Figure" loading="lazy">
+<figcaption><strong>Figure 15.</strong> Case study of the foam cut-out experiment (see <a href="#section:foamcutout" class="secref">Section&nbsp;4.3.5</a>). Our mapping method generates smooth-varying surface maps: see top plot, with smooth variations on the point-to-point error distribution \(\|\mathbf{e}_m\|\). On the other hand, the ZoomOut mapping method leads to discontinuities in the distribution of the point-to-point error \(\|\mathbf{e}_{NTC,m}\|\). For reference, the numbered time instants on the abscissa axis correspond to those of the functional maps illustrated in <a href="#fig:exp_cutout" class="figref">Fig.&nbsp;14</a>. The bottom plot compares the means (\(\bar{\mathbf{e}}, \bar{\mathbf{e}}_{NTC}\)) and standard deviations (\(\sigma_{\mathbf{e}}, \sigma_{\mathbf{e}NTC}\)) of both distributions. </figcaption>
+</figure></div>
+<h4 id="section:foamcutout" class="section-heading"><span class="sec-num">4.3.5</span> Foam cut-out (Fig. 14)</h4>
+<div class="section-body">In this experiment, the challenge comes from the deformation process rather than the object&#x27;s shape. The shape control problem combines bending, stretching, and twisting in 3D space. However, both the mapping method and shape control strategy perform well, resulting in a shape that closely matches the target shape. This is demonstrated by the high level of mesh overlap visible in the three viewpoints on the top right. Using this experiment as a case study, <a href="#fig:exp_cutout_case_study" class="figref">Fig.&nbsp;15</a> illustrates the distribution of the point-to-point error \(\|\mathbf{e}_m\|=\sqrt{\mathbf{e}_m^\intercal\mathbf{e}_m}, \, (m=1,\dots,M)\) for each time instant \(k\), being \(\mathbf{e}_m\in\mathbb{R}^3\) the error vector of the \(m\)-th object point. Below, the error distribution generated by the ZoomOut mapping method (i.e., \(\|\mathbf{e}_{NTC,m}\|\)) exhibits discontinuities and a lack of discernible trends. These characteristics render it impractical for calculating deformation Jacobians or for implementing shape control laws. On the bottom plot, we compare the mean values (\(\bar{\mathbf{e}}, \bar{\mathbf{e}}_{NTC}\)) and standard deviations (\(\sigma_{\mathbf{e}}, \sigma_{\mathbf{e}NTC}\)) of each method. Although the ZoomOut method sometimes converges to the desired solution (the one systematically provided by our method), these cases are sporadic and isolated.</div></section>
+
+        <!-- Prev / Next navigation -->
+        <div class="page-nav">
+            <a href="section-3-3Dmapping.html" class="nav-btn prev-btn">← 3. Time consistent and non-isometry robust surface mapping</a>
+            <a href="section-5-conclusions.html" class="nav-btn next-btn">5. Conclusions →</a>
+        </div>
+    </main>
+</div>
+
+<!-- Back to top button -->
+<button class="back-to-top" id="backToTop" aria-label="Back to top">↑</button>
+
+<!-- Scripts -->
+<script src="js/main.js"></script>
+
+</body>
+</html>

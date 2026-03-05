@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>5. Conclusions — Time Consistent Surface Mapping for Deformable Object Shape Control</title>
+    <link rel="stylesheet" href="css/style.css">
+    <!-- KaTeX for math rendering -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"
+        onload="renderMathInElement(document.body, {
+            delimiters: [
+                {left: '\\[', right: '\\]', display: true},
+                {left: '\\(', right: '\\)', display: false},
+                {left: '$$', right: '$$', display: true},
+                {left: '$', right: '$', display: false}
+            ],
+            throwOnError: false
+        });"></script>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Source+Serif+4:ital,wght@0,400;0,600;1,400&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+</head>
+<body>
+
+<!-- Top navigation bar -->
+<nav class="top-nav" id="topNav">
+    <div class="nav-inner">
+        <a href="index.html" class="nav-title">TIME-CONSISTENT SURFACE MAPPING FOR SHAPE CONTROL</a>
+        <div class="nav-section-select">
+            <select id="sectionSelect" onchange="if(this.value) window.location.href=this.value;">
+                <option value="index.html">Home</option>
+<option value="section-1-introduction.html">1. Introduction</option>
+<option value="section-2-3Dmappingintro.html">2. Functional maps</option>
+<option value="section-3-3Dmapping.html">3. Time consistent and non-isometry robust surface mapping</option>
+<option value="section-4-sectionShapeControl.html">4. Shape control application</option>
+<option value="section-5-conclusions.html" selected>5. Conclusions</option>
+<option value="references.html">References</option>
+            </select>
+        </div>
+        <div class="nav-links">
+            <a href="index.html">Home</a>
+            <a href="references.html">References</a>
+        </div>
+        <button class="nav-toggle" id="navToggle" aria-label="Toggle navigation">
+            <span></span><span></span><span></span>
+        </button>
+    </div>
+</nav>
+
+<!-- Hero / Paper header (only on index page) -->
+<header class="hero hidden">
+    <div class="hero-inner">
+        <p class="hero-journal">IEEE T-ASE 2025</p>
+        <h1 class="hero-title">Time Consistent Surface Mapping for Deformable Object Shape Control</h1>
+        <p class="hero-authors">Ignacio Cuiral-Zueco, Gonzalo López-Nicolás</p>
+        <p class="hero-affiliations">I. Cuiral-Zueco and G. López-Nicolás are with Instituto de Investigación en Ingeniería de Aragón, Universidad de Zaragoza, Spain.  ignaciocuiral@unizar.es,  gonlopez@unizar.es.</p>
+    </div>
+</header>
+
+<!-- Main layout: sidebar + content -->
+<div class="layout">
+
+    <!-- Sidebar / Table of Contents -->
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar-inner">
+            <h3 class="sidebar-title">Contents</h3>
+            <nav class="sidebar-nav" id="toc">
+                <ul class="toc-list"><li class="toc-section "><a href="section-1-introduction.html">1. Introduction</a>
+</li>
+<li class="toc-section "><a href="section-2-3Dmappingintro.html">2. Functional maps</a>
+</li>
+<li class="toc-section "><a href="section-3-3Dmapping.html">3. Time consistent and non-isometry robust surface mapping</a>
+</li>
+<li class="toc-section "><a href="section-4-sectionShapeControl.html">4. Shape control application</a>
+</li>
+<li class="toc-section active"><a href="section-5-conclusions.html">5. Conclusions</a>
+</li></ul>
+            </nav>
+            <div class="sidebar-refs">
+                <a href="references.html" class="sidebar-refs-link">References</a>
+            </div>
+        </div>
+    </aside>
+
+    <!-- Main content area -->
+    <main class="content">
+        <section class="section-content"><h2 id="conclusions" class="section-heading"><span class="sec-num">5</span> Conclusions</h2>
+<div class="section-body"><p>We presented a method for obtaining time-consistent surface maps between deforming shapes, such maps consider all the object&#x27;s geometry and allow defining shape control strategies in real scenarios. We applied the surface mapping method with our proposed control strategy to several deformation problems involving different objects, materials and 3D shapes. The method performed properly both in simulation and in real experiments. It is worth noting that even when used in simulations, with ground-truth tracked object points directly obtained from the simulation mesh, our proposed method still is relevant for maintaining time-consistent surface maps. Our time-consistent surface mapping method provides a versatile solution for the automation of deformable object manipulation, as it is capable of addressing a vast variety of shape mapping scenarios. It efficiently processes large numbers of point correspondences at industry-relevant frequencies. However, limitations such as unfavourable gripper positioning (<a href="references.html#ref-cuiralicra2022" class="citation" title="Gripper positioning for object deformation tasks">Cuiral-Zueco et al., 2022</a>), low robustness against poor lighting conditions and large occlusions, or requirements such as faster computation times still leave room for improvement.</p><p>Regarding future work, our proposed time-consistent mapping method has the potential to be applied to other existing control strategies (e.g., (<a href="references.html#ref-mcconachie2018estimating" class="citation" title="Estimating model utility for deformable object manipulation using multiarmed bandit methods">McConachie and Berenson, 2018</a>)). Additionally, the method could be used to complement and monitor other deformable object tasks, such as cloth folding (e.g., (<a href="references.html#ref-li2018model" class="citation" title="Model-driven feedforward prediction for manipulation of deformable objects">Li et al., 2018</a>)).  Potential future research includes addressing the reliance on connected meshes: if occlusions <em>separate</em> the object&#x27;s visible region into several regions, the resulting disconnected meshes can lead to incorrect basis computations. Other research lines could focus on making the gripper actuation concurrent rather than sequential,  or using the time-consistent functional maps for analysing the feasibility of shape control tasks. Another avenue of research is the exploration of datasets based on synthetic surfaces (e.g., videos of simulated deformations). These datasets could serve as benchmark for other quantitative comparisons of emerging time-consistent surface mapping methods, not just in terms of computation cost as discussed in this paper, but also in accuracy, precision, and other quantitative measures.</p></div>
+<div class="author-bios">
+<div class="author-bio">
+  <img src="img/authorCuiral-Zueco.jpg" alt="Ignacio Cuiral-Zueco" class="author-photo" loading="lazy">
+  <div class="author-bio-text">
+    <strong class="author-bio-name">Ignacio Cuiral-Zueco</strong>
+    received the Ph.D. degree in
+Systems Engineering and Computer Science from Universidad de
+Zaragoza, Spain, in 2024. He is a member of the Robotics, Perception, and Real-Time research group. His current research interests include computer vision, control engineering, and robotics.
+  </div>
+</div>
+<div class="author-bio">
+  <img src="img/authorLopez-Nicolas.jpg" alt="Gonzalo López-Nicolás" class="author-photo" loading="lazy">
+  <div class="author-bio-text">
+    <strong class="author-bio-name">Gonzalo López-Nicolás</strong>
+    (Senior Member, IEEE) received the Ph.D. degree in
+Systems Engineering and Computer Science from Universidad de
+Zaragoza, Spain, in 2008. He is currently a full professor at the Department of Systems Engineering and Automation, Universidad de
+Zaragoza. He is a member of the Instituto de Investigación en
+Ingeniería de Aragón (I3A). His current research interests
+are focused on shape control, visual control, multi-robot systems, and application of computer vision to robotics.
+  </div>
+</div>
+</div></section>
+
+        <!-- Prev / Next navigation -->
+        <div class="page-nav">
+            <a href="section-4-sectionShapeControl.html" class="nav-btn prev-btn">← 4. Shape control application</a>
+            <a href="references.html" class="nav-btn next-btn">References →</a>
+        </div>
+    </main>
+</div>
+
+<!-- Back to top button -->
+<button class="back-to-top" id="backToTop" aria-label="Back to top">↑</button>
+
+<!-- Scripts -->
+<script src="js/main.js"></script>
+
+</body>
+</html>

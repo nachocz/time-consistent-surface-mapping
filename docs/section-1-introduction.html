@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>1. Introduction — Time Consistent Surface Mapping for Deformable Object Shape Control</title>
+    <link rel="stylesheet" href="css/style.css">
+    <!-- KaTeX for math rendering -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"
+        onload="renderMathInElement(document.body, {
+            delimiters: [
+                {left: '\\[', right: '\\]', display: true},
+                {left: '\\(', right: '\\)', display: false},
+                {left: '$$', right: '$$', display: true},
+                {left: '$', right: '$', display: false}
+            ],
+            throwOnError: false
+        });"></script>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Source+Serif+4:ital,wght@0,400;0,600;1,400&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+</head>
+<body>
+
+<!-- Top navigation bar -->
+<nav class="top-nav" id="topNav">
+    <div class="nav-inner">
+        <a href="index.html" class="nav-title">TIME-CONSISTENT SURFACE MAPPING FOR SHAPE CONTROL</a>
+        <div class="nav-section-select">
+            <select id="sectionSelect" onchange="if(this.value) window.location.href=this.value;">
+                <option value="index.html">Home</option>
+<option value="section-1-introduction.html" selected>1. Introduction</option>
+<option value="section-2-3Dmappingintro.html">2. Functional maps</option>
+<option value="section-3-3Dmapping.html">3. Time consistent and non-isometry robust surface mapping</option>
+<option value="section-4-sectionShapeControl.html">4. Shape control application</option>
+<option value="section-5-conclusions.html">5. Conclusions</option>
+<option value="references.html">References</option>
+            </select>
+        </div>
+        <div class="nav-links">
+            <a href="index.html">Home</a>
+            <a href="references.html">References</a>
+        </div>
+        <button class="nav-toggle" id="navToggle" aria-label="Toggle navigation">
+            <span></span><span></span><span></span>
+        </button>
+    </div>
+</nav>
+
+<!-- Hero / Paper header (only on index page) -->
+<header class="hero hidden">
+    <div class="hero-inner">
+        <p class="hero-journal">IEEE T-ASE 2025</p>
+        <h1 class="hero-title">Time Consistent Surface Mapping for Deformable Object Shape Control</h1>
+        <p class="hero-authors">Ignacio Cuiral-Zueco, Gonzalo López-Nicolás</p>
+        <p class="hero-affiliations">I. Cuiral-Zueco and G. López-Nicolás are with Instituto de Investigación en Ingeniería de Aragón, Universidad de Zaragoza, Spain.  ignaciocuiral@unizar.es,  gonlopez@unizar.es.</p>
+    </div>
+</header>
+
+<!-- Main layout: sidebar + content -->
+<div class="layout">
+
+    <!-- Sidebar / Table of Contents -->
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar-inner">
+            <h3 class="sidebar-title">Contents</h3>
+            <nav class="sidebar-nav" id="toc">
+                <ul class="toc-list"><li class="toc-section active"><a href="section-1-introduction.html">1. Introduction</a>
+<ul>
+<li class="toc-subsection"><a href="#relatedWork">1.1. Related work in shape control</a>
+</li>
+<li class="toc-subsection"><a href="#relatedWorkFmaps">1.2. Related work in surface correspondence</a>
+</li>
+<li class="toc-subsection"><a href="#problem-motivation">1.3. Problem motivation</a>
+</li>
+<li class="toc-subsection"><a href="#contributions">1.4. Contributions</a>
+<ul>
+<li class="toc-subsubsection"><a href="#we-generate-time-consistent-functional-maps-along-iterations">1.4.1. We generate time-consistent functional maps along iterations</a></li>
+<li class="toc-subsubsection"><a href="#we-compute-consistent-surface-point-tracking-during-deformation-processes">1.4.2. We compute consistent surface point tracking during deformation processes</a></li>
+<li class="toc-subsubsection"><a href="#our-method-allows-for-computation-times-that-are-suitable-for-industrial-use">1.4.3. Our method allows for computation times that are suitable for industrial use</a></li>
+<li class="toc-subsubsection"><a href="#our-proposed-framework-is-robust-to-non-isometries-and-problems-arising-from-real-data">1.4.4. Our proposed framework is robust to non-isometries and problems arising from real data</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toc-section "><a href="section-2-3Dmappingintro.html">2. Functional maps</a>
+</li>
+<li class="toc-section "><a href="section-3-3Dmapping.html">3. Time consistent and non-isometry robust surface mapping</a>
+</li>
+<li class="toc-section "><a href="section-4-sectionShapeControl.html">4. Shape control application</a>
+</li>
+<li class="toc-section "><a href="section-5-conclusions.html">5. Conclusions</a>
+</li></ul>
+            </nav>
+            <div class="sidebar-refs">
+                <a href="references.html" class="sidebar-refs-link">References</a>
+            </div>
+        </div>
+    </aside>
+
+    <!-- Main content area -->
+    <main class="content">
+        <section class="section-content"><h2 id="introduction" class="section-heading"><span class="sec-num">1</span> Introduction</h2>
+<div class="section-body"><p>Robot-based deformable object manipulation is present in a variety of tasks (e.g., deformable object transportation (<a href="references.html#ref-lopez2020simultaneous" class="citation" title="Simultaneous shape control and transport with multiple robots">López-Nicolás et al., 2020</a>; <a href="references.html#ref-sirintuna2023object" class="citation" title="An Object Deformation-Agnostic Framework for Human–Robot Collaborative Transportation">Sirintuna et al., 2024</a>), linear object manipulation (<a href="references.html#ref-naijing2022" class="citation" title="Dynamic Modeling and Control of Deformable Linear Objects for Single-Arm and Dual-Arm Robot Manipulations">Lv et al., 2022</a>), cable untangling (<a href="references.html#ref-huang2023untangling" class="citation" title="Untangling Multiple Deformable Linear Objects in Unknown Quantities With Complex Backgrounds">Huang et al., 2024</a>), object cutting (<a href="references.html#ref-han2020vision" class="citation" title="Vision-based cutting control of deformable objects with surface tracking">Han et al., 2020</a>), etc.). These tasks may involve different types of deformable objects which, within the field of robotics, can be classified according to several criteria (<a href="references.html#ref-herguedas2019survey" class="citation" title="Survey on multi-robot manipulation of deformable objects">Herguedas et al., 2019</a>; <a href="references.html#ref-sanchez2018robotic" class="citation" title="Robotic manipulation and sensing of deformable objects in domestic and industrial applications: a survey">Sanchez et al., 2018</a>; <a href="references.html#ref-yin2021modeling" class="citation" title="Modeling, learning, perception, and control methods for deformable object manipulation">Yin et al., 2021</a>). Our goal is to achieve 3D shape control by using robots to manipulate deformable objects into acquiring a desired target shape (<a href="references.html#ref-cuiraltaxonomy" class="citation" title="Taxonomy of Deformable Object Shape Control">Cuiral-Zueco and López-Nicolás, 2024</a>). At a high level of abstraction, the notion of target shape refers to the shape we want the object to achieve. However, generating a mathematically grounded definition of shape error that covers a broad range of shape control cases is challenging, specially for 3D texture-less objects that present symmetries or lack geometric distinctive features. We propose a shape error formalization that adapts to deformations experienced by the object and remains temporally consistent, and thus constitutes a proper <em>shape control reference</em>.</p><p>Our approach, illustrated in <a href="#fig:approach-scheme" class="figref">Fig.&nbsp;1</a>, involves the use of a 3D sensor (e.g., an RGB-D camera) to perceive the object and generate a mesh of its visible surface. Our proposed time-consistent surface mapping allows for the comparison of the current shape with the reference (target) shape, and generates a surface map that enables us to generate an input reference for the shape control strategy. The shape control strategy generates 6 degrees of freedom (DoF) actions for each robot involved in the manipulation of the object, thus deforming it towards the desired shape.</p><figure class="survey-figure" id="fig:approach-scheme">
+<img src="img/general_scheme.png" alt="Figure" loading="lazy">
+<figcaption><strong>Figure 1.</strong> Overview of the proposed approach. At the top, the main objective of deforming an object into a desired shape is illustrated with a sequence of deformation states (red mesh). A general outline of the proposed shape control framework is shown, and our experimental setup is illustrated on the right side of the figure. A 3D sensor (e.g., an RGB-D camera), provides the RGB-D images from which the object&#x27;s mesh is retrieved at each iteration. The current object mesh is compared to the target mesh by means of our proposed time consistent surface mapping method. Our main contribution entails generating surface maps that allow defining the shape control reference, thus serving as input for the shape control strategy. A 6 DoF action is defined for each of the robots involved in the manipulation of the object.</figcaption>
+</figure></div>
+<h3 id="relatedWork" class="section-heading"><span class="sec-num">1.1</span> Related work in shape control</h3>
+<div class="section-body">Regarding the shape control literature (<a href="references.html#ref-zhu2022" class="citation" title="Editorial: Robotic Handling of Deformable Objects">Zhu et al., 2022</a>), there is a variety of approaches and control reference definitions. Some methods define their control reference with the use of feature points on the object’s surface (e.g. (<a href="references.html#ref-navarro2016automatic" class="citation" title="Automatic 3-D manipulation of soft objects by robotic arms with an adaptive deformation model">Navarro-Alarcon et al., 2016</a>; <a href="references.html#ref-aranda2020monocular" class="citation" title="Monocular Visual Shape Tracking and Servoing for Isometrically Deforming Objects">Aranda et al., 2020</a>; <a href="references.html#ref-shetab2022rigid" class="citation" title="As-Rigid-As-Possible Shape Servoing">Shetab-Bushehri et al., 2022</a>; <a href="references.html#ref-berenson2013manipulation" class="citation" title="Manipulation of deformable objects without modeling and simulating deformation">Berenson, 2013</a>; <a href="references.html#ref-10472610" class="citation" title="A Robot-Object Unified Modeling Method for Deformable Object Manipulation in Constrained Environments">Deng et al., 2024</a>)). Method in (<a href="references.html#ref-berenson2013manipulation" class="citation" title="Manipulation of deformable objects without modeling and simulating deformation">Berenson, 2013</a>) defines its error reference as the alignment of a set of (provided) points, whereas (<a href="references.html#ref-shetab2022rigid" class="citation" title="As-Rigid-As-Possible Shape Servoing">Shetab-Bushehri et al., 2022</a>) defines the error reference using the nodes of a planar deformation mesh that is updated by means of visual features. The deformation planning approach in (<a href="references.html#ref-10472610" class="citation" title="A Robot-Object Unified Modeling Method for Deformable Object Manipulation in Constrained Environments">Deng et al., 2024</a>) uses visual markers (laser-reflective features) to determine the object&#x27;s shape. Other methods focus on deformable object transport, this is the case of (<a href="references.html#ref-lopez2020simultaneous" class="citation" title="Simultaneous shape control and transport with multiple robots">López-Nicolás et al., 2020</a>) which uses a rigid Procrustes optimization to define a homogeneous contour point matching between planar shapes. Some approaches like (<a href="references.html#ref-aranda2020monocular" class="citation" title="Monocular Visual Shape Tracking and Servoing for Isometrically Deforming Objects">Aranda et al., 2020</a>) focus on isometric deformations of planar objects with monocular perception by using few feature points and a Shape-from-Template analysis. Methods like (<a href="references.html#ref-cuiraliros2021" class="citation" title="Multi-scale Laplacian-based FMM for shape control">Cuiral-Zueco and López-Nicolás, 2021</a>) tackle both isometric and elastic deformations of planar objects by defining a contour mapping based on a multiscale Fast Marching Method. Strategies like (<a href="references.html#ref-navarro2017fourier" class="citation" title="Fourier-based shape servoing: a new feedback method to actively deform soft objects into desired 2-D image contours">Navarro-Alarcon and Liu, 2017</a>; <a href="references.html#ref-zhu2021vision" class="citation" title="Vision-based manipulation of deformable and rigid objects using subspace projections of 2-D contours">Zhu et al., 2021</a>; <a href="references.html#ref-qi2021contour" class="citation" title="Contour Moments Based Manipulation of Composite Rigid-Deformable Objects With Finite Time Model Estimation and Shape/Position Control">Qi et al., 2022</a>) tackle the manipulation of deformable objects, defining the control strategy by means of (2D) contour moments. However, they are limited to the analysis of the 1D contour (embedded in 2D or 3D) of the object&#x27;s visible silhouette. Similarly, deformable linear object (DLOs) manipulation methods (e.g., approach in (<a href="references.html#ref-10412116" class="citation" title="Deformable Linear Objects Manipulation With Online Model Parameters Estimation">Caporali et al., 2024</a>)) typically define shape references by mapping the curves (1D domains) that represent DLOs. For example, the method in (<a href="references.html#ref-10120758" class="citation" title="Deformable Linear Objects 3D Shape Estimation and Tracking From Multiple 2D Views">Caporali et al., 2023</a>) matches DLOs through B-spline representations. However, mapping 2D surfaces (embedded in 3D) for deformable object shape control remains a challenge.</div>
+<h3 id="relatedWorkFmaps" class="section-heading"><span class="sec-num">1.2</span> Related work in surface correspondence</h3>
+<div class="section-body">As this paper makes extensive use of functional maps, we provide a specific review of the relevant computer graphics literature. Functional maps, introduced in the shape correspondence context in (<a href="references.html#ref-ovsjanikov2012functional" class="citation" title="Functional maps: a flexible representation of maps between shapes">Ovsjanikov et al., 2012</a>), are a robust and efficient tool for isometric shape surface mapping. Since (<a href="references.html#ref-ovsjanikov2012functional" class="citation" title="Functional maps: a flexible representation of maps between shapes">Ovsjanikov et al., 2012</a>) was published, several proposals have modified and extended the use of functional maps for diverse and demanding challenges such as partial mapping of shapes (<a href="references.html#ref-rodola2017partial" class="citation" title="Partial functional correspondence">Rodolà et al., 2017</a>), surface-orientation preserving correspondences (<a href="references.html#ref-ren2018continuous" class="citation" title="Continuous and orientation-preserving correspondences via functional maps">Ren et al., 2018</a>) or vector-field transfer between surfaces with the use of complex functional maps (<a href="references.html#ref-donati2022complex" class="citation" title="Complex functional maps: A conformal link between tangent bundles">Donati et al., 2022</a>). Other functional map based methods focus on a coarse-to-fine shape analysis. This is the case of (<a href="references.html#ref-eisenberger2020smooth" class="citation" title="Smooth shells: Multi-scale shape registration with functional maps">Eisenberger et al., 2020</a>), in which smoothed versions of the shape, along with a Markov chain Monte Carlo initialization, allow refining the mapping process at different levels of detail. An interesting alternative is the ZoomOut method, proposed in (<a href="references.html#ref-melzi2019zoomout" class="citation" title="ZoomOut: spectral upsampling for efficient shape correspondence">Melzi et al., 2019</a>), where a coarse-to-fine analysis is also performed.</div>
+<h3 id="problem-motivation" class="section-heading"><span class="sec-num">1.3</span> Problem motivation</h3>
+<div class="section-body"><figure class="survey-figure" id="fig:explicaciones-TASE-1">
+<div class="subfigures">
+<div class="subfigure">
+<img src="img/explicaciones-TASE-a.png" alt="Visual texture based error" loading="lazy">
+<p class="subfig-caption">(Visual texture based error)</p>
+</div>
+<div class="subfigure">
+<img src="img/explicaciones-TASE-b.png" alt="Feature-based error" loading="lazy">
+<p class="subfig-caption">(Feature-based error)</p>
+</div>
+<div class="subfigure">
+<img src="img/explicaciones-TASE-c.png" alt="Surface map based error" loading="lazy">
+<p class="subfig-caption">(Surface map based error)</p>
+</div>
+</div>
+<figcaption><strong>Figure 2.</strong> Three different shape error criteria (a, b and c). (a) shows a visual texture-based criterion in which, although both shapes are the same, their visual descriptors present different positions and lead to non-zero error. (b) shows a feature based shape error definition that does not consider all the object&#x27;s geometry. The descriptor (two discrete points and a segment&#x27;s curvature) is identical in both cases and thus leads to zero shape error even-though the shapes are different. (c) involves a geometry based surface map that considers all the object&#x27;s geometry and does not depend on visual texture, leading to proper shape analysis on both comparison cases.</figcaption>
+</figure><p>Surface mapping defines a continuous function that maps points from one surface to another, based on their geometry. This technique is relevant in computer graphics for producing realistic animations and effects, as it ensures that textures accurately adapt to the shape of an object, even when the object deforms. When applied in synthetic environments, such as simulations and animations, maintaining mapping consistency during surface deformations is straightforward, as the positions of all mesh nodes are always known. However, applying surface mapping to texture-less real-world objects poses considerable challenges (e.g., ground-truth point positions are not known, sensor data may be noisy and incomplete, etc.). Therefore, significant efforts are needed to ensure mapping consistency during surface deformations in real scenarios. We define <em>time-consistent surface mapping</em> as the process of computing and updating surface maps so that they adapt to surface deformations, specifically considering surfaces acquired from sensor data. Thus, time consistency expands the applicability of surface mapping to real-world scenarios, closing the gap between synthetic models and real-world practical applications. To name some potential applications of time-consistent surface mapping: shape control of deformable objects in manufacturing processes (tackled in this paper), quality control in the food industry, object texture-transfer in augmented reality, or surface mapping in real non-rigid environments (e.g., laparoscopies).</p><p>A challenging goal in the context of 3D shape control is to define a geometry based holistic shape error. We propose defining such shape error through 3D surface maps computed by means of functional maps (see a brief introduction to functional maps in section <a href="section-2-3Dmappingintro.html#fmapsgeneral" class="ref">2.1</a>). Functional maps can be of great interest in defining a reference for shape control because, in comparison to other shape control reference definitions from the literature, they:
+<ul><li>ıtem allow generating geometry based surface maps. Some shape control methods base their shape error on visual texture (e.g., (<a href="references.html#ref-shetab2022rigid" class="citation" title="As-Rigid-As-Possible Shape Servoing">Shetab-Bushehri et al., 2022</a>)). However, even if an object presents rich visual texture, such texture is not necessarily representative of the object&#x27;s shape (see <a href="#fig:explicaciones-TASE-1" class="figref">Fig.&nbsp;2</a>.a). Furthermore, repetitive or symmetric visual patterns may lead to ambiguities, further limiting texture-based methods.
+    ıtem a holistic shape analysis, in which all the object&#x27;s available geometric information is considered. Existing shape control methods such as (<a href="references.html#ref-navarro2016automatic" class="citation" title="Automatic 3-D manipulation of soft objects by robotic arms with an adaptive deformation model">Navarro-Alarcon et al., 2016</a>; <a href="references.html#ref-hu2018three" class="citation" title="Three-dimensional deformable object manipulation using fast online Gaussian process regression">Hu et al., 2018</a>; <a href="references.html#ref-mo2020automated" class="citation" title="Automated 3-D deformation of a soft object using a continuum robot">Mo et al., 2020</a>; <a href="references.html#ref-10472610" class="citation" title="A Robot-Object Unified Modeling Method for Deformable Object Manipulation in Constrained Environments">Deng et al., 2024</a>) define their shape error through a reduced number of features that need to be properly defined beforehand (depending on the object&#x27;s shape) and could lead to ambiguities (see <a href="#fig:explicaciones-TASE-1" class="figref">Fig.&nbsp;2</a>.b). Thus, such approaches are limited to the amount and variety of available features that the object presents.
+    ıtem favour isometries and seek maximising curvature resemblance. These two aspects lead to the minimisation of stretching/compression and bending deformation processes.</li></ul>
+Note that surface mapping methods from the functional maps literature are not directly applicable to shape control, as it constitutes a relatively different problem. We will now discuss the difficulties and challenges that need to be addressed.</p></div>
+<h3 id="contributions" class="section-heading"><span class="sec-num">1.4</span> Contributions</h3>
+<div class="section-body">The following is a summary of the challenges we have addressed and the main contributions of the 3D shape control framework presented in this paper.</div>
+<h4 id="we-generate-time-consistent-functional-maps-along-iterations" class="section-heading"><span class="sec-num">1.4.1</span> We generate time-consistent functional maps along iterations</h4>
+<div class="section-body">The functional maps literature focuses on the computation of functional maps between two specific static shapes, whereas shape control requires the consistent computation along iterations of functional maps between an evolving (deforming) shape and a target shape. As the object deforms and acquires different shapes, new minima may appear in the functional map computation process, leading to solutions (functional maps) that may differ greatly from the initially computed functional map.</div>
+<h4 id="we-compute-consistent-surface-point-tracking-during-deformation-processes" class="section-heading"><span class="sec-num">1.4.2</span> We compute consistent surface point tracking during deformation processes</h4>
+<div class="section-body">Time consistent functional maps alone are not sufficient for generating a proper shape control error: a functional map based shape error would be defined in terms of the shape&#x27;s Laplace-Beltrami basis and thus be invariant to isometries. That is, if two different shapes constitute an isometry, their bases are identical and thus would lead to zero error. Therefore, it is necessary to define a point-to-point based error, something that would be straightforward in virtual mesh deformations (simulations) as the shape&#x27;s node ground-truth positions are known. However, in a real setup, a new set of the object&#x27;s 3D points is acquired in each iteration (with varying number of points and arbitrary index/order). Our method allows to consistently track surface points during the deformation process and thus compute deformation Jacobians and time-consistent point-to-point error vectors that are suitable for shape control.</div>
+<h4 id="our-method-allows-for-computation-times-that-are-suitable-for-industrial-use" class="section-heading"><span class="sec-num">1.4.3</span> Our method allows for computation times that are suitable for industrial use</h4>
+<div class="section-body">We managed to remain above 5&nbsp;[Hz] in the computation of the time-consistent surface maps. The functional maps literature prioritises fineness over computational time; they tackle a different problem (mapping between two static virtual surfaces) and face challenging bench-marking in terms of accuracy. Generally, methods analyse highly detailed meshes (\(\approx10.000\) mesh nodes), use sophisticated shape descriptors (e.g., wave-kernel signature (<a href="references.html#ref-aubry2011wave" class="citation" title="The wave kernel signature: A quantum mechanical approach to shape analysis">Aubry et al., 2011</a>)) and solution searching methods (e.g., MCMC initialization (<a href="references.html#ref-eisenberger2020smooth" class="citation" title="Smooth shells: Multi-scale shape registration with functional maps">Eisenberger et al., 2020</a>)) that typically require minutes of processing to obtain refined results. Our framework is based on one of the fastest methods in the computer graphics literature (ZoomOut method (<a href="references.html#ref-melzi2019zoomout" class="citation" title="ZoomOut: spectral upsampling for efficient shape correspondence">Melzi et al., 2019</a>)) and, without the use of shape descriptors, we achieve a compromise between fineness (\(\approx 500\) mesh nodes), computational time (\(\leq 0.2\, [s]\)), and robustness.</div>
+<h4 id="our-proposed-framework-is-robust-to-non-isometries-and-problems-arising-from-real-data" class="section-heading"><span class="sec-num">1.4.4</span> Our proposed framework is robust to non-isometries and problems arising from real data</h4>
+<div class="section-body">Surface mapping methods in the functional maps literature typically analyse mesh datasets with fine and smooth meshes in which target shapes constitute isometries (<a href="references.html#ref-anguelov2005scape" class="citation" title="Scape: shape completion and animation of people">Anguelov et al., 2005</a>; <a href="references.html#ref-cosmo2016shrec" class="citation" title="SHREC’16: Partial matching of deformable shapes">Cosmo et al., 2016</a>). Surface mapping of large non-isometries is still an ongoing challenge in the computer graphics literature and, in this paper, we do not solve it in a formal and general manner. However, we do achieve robustness of our system to non-isometric deformations. Regarding real data derived problems, a realistic industrial set-up will most likely involve the use of affordable 3D sensors, such as RGB-D cameras, that provide noisy and varying/incomplete data. Aspects like object occlusions (e.g., object self-occlusions), unsuitable sensor position or sensor&#x27;s limitations (reflections, bad illumination, etc.) can cause sudden variations on the mesh. Our framework is robust to these problems, as it uses information from previous iterations in a coarse-to-fine manner.</div></section>
+
+        <!-- Prev / Next navigation -->
+        <div class="page-nav">
+            <a href="index.html" class="nav-btn prev-btn">← Home</a>
+            <a href="section-2-3Dmappingintro.html" class="nav-btn next-btn">2. Functional maps →</a>
+        </div>
+    </main>
+</div>
+
+<!-- Back to top button -->
+<button class="back-to-top" id="backToTop" aria-label="Back to top">↑</button>
+
+<!-- Scripts -->
+<script src="js/main.js"></script>
+
+</body>
+</html>

@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>2. Functional maps — Time Consistent Surface Mapping for Deformable Object Shape Control</title>
+    <link rel="stylesheet" href="css/style.css">
+    <!-- KaTeX for math rendering -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"
+        onload="renderMathInElement(document.body, {
+            delimiters: [
+                {left: '\\[', right: '\\]', display: true},
+                {left: '\\(', right: '\\)', display: false},
+                {left: '$$', right: '$$', display: true},
+                {left: '$', right: '$', display: false}
+            ],
+            throwOnError: false
+        });"></script>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Source+Serif+4:ital,wght@0,400;0,600;1,400&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+</head>
+<body>
+
+<!-- Top navigation bar -->
+<nav class="top-nav" id="topNav">
+    <div class="nav-inner">
+        <a href="index.html" class="nav-title">TIME-CONSISTENT SURFACE MAPPING FOR SHAPE CONTROL</a>
+        <div class="nav-section-select">
+            <select id="sectionSelect" onchange="if(this.value) window.location.href=this.value;">
+                <option value="index.html">Home</option>
+<option value="section-1-introduction.html">1. Introduction</option>
+<option value="section-2-3Dmappingintro.html" selected>2. Functional maps</option>
+<option value="section-3-3Dmapping.html">3. Time consistent and non-isometry robust surface mapping</option>
+<option value="section-4-sectionShapeControl.html">4. Shape control application</option>
+<option value="section-5-conclusions.html">5. Conclusions</option>
+<option value="references.html">References</option>
+            </select>
+        </div>
+        <div class="nav-links">
+            <a href="index.html">Home</a>
+            <a href="references.html">References</a>
+        </div>
+        <button class="nav-toggle" id="navToggle" aria-label="Toggle navigation">
+            <span></span><span></span><span></span>
+        </button>
+    </div>
+</nav>
+
+<!-- Hero / Paper header (only on index page) -->
+<header class="hero hidden">
+    <div class="hero-inner">
+        <p class="hero-journal">IEEE T-ASE 2025</p>
+        <h1 class="hero-title">Time Consistent Surface Mapping for Deformable Object Shape Control</h1>
+        <p class="hero-authors">Ignacio Cuiral-Zueco, Gonzalo López-Nicolás</p>
+        <p class="hero-affiliations">I. Cuiral-Zueco and G. López-Nicolás are with Instituto de Investigación en Ingeniería de Aragón, Universidad de Zaragoza, Spain.  ignaciocuiral@unizar.es,  gonlopez@unizar.es.</p>
+    </div>
+</header>
+
+<!-- Main layout: sidebar + content -->
+<div class="layout">
+
+    <!-- Sidebar / Table of Contents -->
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar-inner">
+            <h3 class="sidebar-title">Contents</h3>
+            <nav class="sidebar-nav" id="toc">
+                <ul class="toc-list"><li class="toc-section "><a href="section-1-introduction.html">1. Introduction</a>
+</li>
+<li class="toc-section active"><a href="section-2-3Dmappingintro.html">2. Functional maps</a>
+<ul>
+<li class="toc-subsection"><a href="#fmapsgeneral">2.1. Functional maps: background</a>
+</li>
+<li class="toc-subsection"><a href="#the-zoomout-method">2.2. The ZoomOut method</a>
+</li>
+</ul>
+</li>
+<li class="toc-section "><a href="section-3-3Dmapping.html">3. Time consistent and non-isometry robust surface mapping</a>
+</li>
+<li class="toc-section "><a href="section-4-sectionShapeControl.html">4. Shape control application</a>
+</li>
+<li class="toc-section "><a href="section-5-conclusions.html">5. Conclusions</a>
+</li></ul>
+            </nav>
+            <div class="sidebar-refs">
+                <a href="references.html" class="sidebar-refs-link">References</a>
+            </div>
+        </div>
+    </aside>
+
+    <!-- Main content area -->
+    <main class="content">
+        <section class="section-content"><h2 id="3Dmappingintro" class="section-heading"><span class="sec-num">2</span> Functional maps</h2>
+<h3 id="fmapsgeneral" class="section-heading"><span class="sec-num">2.1</span> Functional maps: background</h3>
+<div class="section-body"><p>Functional maps are widely used to compute point-to-point correspondences between pairs of 2D surfaces (embedded in 3D). In the computer graphics context, they were introduced in (<a href="references.html#ref-ovsjanikov2012functional" class="citation" title="Functional maps: a flexible representation of maps between shapes">Ovsjanikov et al., 2012</a>) for computing point-to-point correspondences between two surfaces (manifolds) \(\mathcal{M}\) and \(\mathcal{N}\). These surfaces are defined in the discrete setting as triangular meshes, being \(M\) the number of nodes in \(\mathcal{M}\) and \(N\) the number of nodes in \(\mathcal{N}\). Consider now the space of all real-valued functions on surfaces \(\mathcal{M}\) and \(\mathcal{N}\), i.e. \(\mathcal{F}(\mathcal{M},\mathbb{R})\) and \(\mathcal{F}(\mathcal{N},\mathbb{R})\) respectively, and suppose we can obtain a functional \(T_F\) that maps one space onto the other:
+<span id="eq:TF"></span>\[
+    T_F:\mathcal{F}(\mathcal{M},\mathbb{R})\rightarrow\mathcal{F}(\mathcal{N},\mathbb{R}).
+    \tag{1}
+\]
+This means that any real-valued function \(f:\mathcal{M}\rightarrow\mathbb{R}\) can be mapped to an analogous function \(g:\mathcal{N}\rightarrow\mathbb{R}\) by applying functional \(T_F\) as follows:
+<span id="eq:TF(f)"></span>\[
+    g=T_F(f).
+    \tag{2}
+\]
+Recall, the objective is to obtain a point-to-point matching between \(\mathcal{M}\) and \(\mathcal{N}\). Therefore, as input for (<a href="#eq:TF(f)" class="ref">2</a>), we are interested in a specific kind of function \(f\) that allows us to select specific points of surface \(\mathcal{M}\) and find their corresponding image in \(\mathcal{N}\). We denote a function that selects a point \(x_s\in\mathcal{M}\) as: \(f_s(x)=1\) if \(x=x_s\) and \(f_s(x)=0\) otherwise. After applying (<a href="#eq:TF(f)" class="ref">2</a>), we can obtain the corresponding selector function for \(\mathcal{N}\), i.e. \(g_s\), which provides us with the matched point \(x_s\in\mathcal{N}\): one just needs to find \(x\in\mathcal{N} \mid g_s(x)= 1\) and \(g_s(x)=0\) for the rest of points. The main problem now is how to obtain \(T_F\) in (<a href="#eq:TF" class="ref">1</a>).</p><p>We can consider a function \(f\) as a linear combination of infinite basis functions \(\{\phi^\mathcal{M}_i\}\), i.e. \(f=\sum^\infty_i a_i \phi^\mathcal{M}_i\). Also consider \({\{\phi^\mathcal{N}_j\}}\) as the analogous set of infinite basis functions of \(g\). This decomposition leads to the following definition of \(T_F\) (proposed in (<a href="references.html#ref-ovsjanikov2012functional" class="citation" title="Functional maps: a flexible representation of maps between shapes">Ovsjanikov et al., 2012</a>), remark 4.2):
+<span id="eq:TF_sum"></span>\[
+    T_F(f)=T_F(\sum^\infty_{i}a_i\phi^\mathcal{M}_i)=\sum^\infty_{j}\sum^\infty_{i}a_i c_{i,j}\phi^\mathcal{N}_j.
+    \tag{3}
+\]
+The functional representation \(T_F\) (or functional map, for now on) can be represented in matrix form as</p><p><span id="eq:Cinf"></span>\[
+T_F(\textbf{A})=\textbf{C}_{\infty}\textbf{A},
+\tag{4}
+\]
+being \(\textbf{C}_{\infty}\) (with elements \(c_{i,j}\in \mathbb{R}\)) an infinite matrix and \(\textbf{A}\in \mathbb{R}^{\infty}\) the infinite vector of coefficients \(a_i\in \mathbb{R}\). The goal is to obtain a finite approximation of \(\textbf{C}_{\infty}\), i.e. \(\textbf{C}\), that allows us to compute a point-to-point map \(T:\mathcal{M}\rightarrow\mathcal{N}\) between our two shapes&#x27; surfaces \(\mathcal{M}\) and \(\mathcal{N}\).</p><p>Before computing \(\textbf{C}\) and \(T\) we need to choose a basis \(\{\phi^\mathcal{M}_i\}\) and \({\{\phi^\mathcal{N}_j\}}\). A specially convenient basis is provided by the Laplace-Beltrami eigenfunctions, as they present proper compactness (i.e. with a few components they provide a good approximation of functions) and stability under deformation processes (i.e. they are invariant to isometries).</p><p>Given the triangle mesh representation of surfaces \(\mathcal{M}\) and \(\mathcal{N}\), a common approach in the literature is to approximate the Laplace-Beltrami eigenfunctions with the eigenvectors of the meshes&#x27; discrete Laplacian matrices (obtained with cotangent weight criterion (<a href="references.html#ref-pinkall1993computing" class="citation" title="Computing discrete minimal surfaces and their conjugates">Pinkall and Polthier, 1993</a>)). If we discard the zero-valued eigenvalue, the semi-definite Laplacian matrix \(\textbf{L}^\mathcal{M}\in\mathbb{R}^{M\times M}\) gives a finite set of non-zero eigenvectors \(\Phi^\mathcal{M}_I=[\phi^\mathcal{M}_1,..,\phi^\mathcal{M}_i,...,\phi^\mathcal{M}_I]\), where \(I\in \mathbb{N}\), \(I&lt;M\) denotes the number of eigenvectors (omitting the null eigenvector) that, in column form, constitute matrix \(\Phi^\mathcal{M}_I\in\mathbb{R}^{M\times I}\). Analogously, eigenvectors of \(\textbf{L}^\mathcal{N}\in\mathbb{R}^{N\times N}\) yields matrix \(\Phi^\mathcal{N}_J\in\mathbb{R}^{N\times J}\), where \(J\in \mathbb{N}, J&lt;N\). Both bases, \(\Phi^\mathcal{M}_I,\Phi^\mathcal{N}_J\), present columns (eigenvectors) ordered by increasing associated eigenvalues.</p><p>As described above, given a functional map \(\textbf{C}\) between two surfaces \(\mathcal{M}\) and \(\mathcal{N}\), a point-to-point map between the surfaces can be retrieved. Once bases \(\Phi^\mathcal{M}_I\) and \(\Phi^\mathcal{N}_J\) are obtained, the computation of \(\textbf{C}\) is tackled in different ways. Most approaches involve optimisation processes that make use of mesh feature descriptors such as SHOT (<a href="references.html#ref-tombari2010unique" class="citation" title="Unique signatures of histograms for local surface description">Tombari et al., 2010</a>) or WKS (<a href="references.html#ref-aubry2011wave" class="citation" title="The wave kernel signature: A quantum mechanical approach to shape analysis">Aubry et al., 2011</a>) (projected on the basis functions) combined with regularisation terms or stochastic analysis. Among all the current approaches we focus on (<a href="references.html#ref-melzi2019zoomout" class="citation" title="ZoomOut: spectral upsampling for efficient shape correspondence">Melzi et al., 2019</a>) for two main reasons: it is significantly faster (in the order of tenths of a second instead of minutes on standard computers) and thus fits the closed-loop control paradigm; and it performs a coarse-to-fine optimisation process in the frequency domain that allows to prioritise coarse geometry of the shape over the fine details.</p></div>
+<h3 id="the-zoomout-method" class="section-heading"><span class="sec-num">2.2</span> The ZoomOut method</h3>
+<div class="section-body"><p>Note that, as basis&#x27; eigenvalues increase, their associated eigenvectors represent a higher frequency component of the basis. Given low values of \(I\) or \(J\), the lower frequency components of the basis are prioritised. This fact is well exploited in ZoomOut (<a href="references.html#ref-melzi2019zoomout" class="citation" title="ZoomOut: spectral upsampling for efficient shape correspondence">Melzi et al., 2019</a>) where both bases (\(\Phi^\mathcal{M}_I\) and \(\Phi^\mathcal{N}_J\)) are enlarged iteratively. This method iteratively computes the point-to-point map \(T:\mathcal{M}\rightarrow\mathcal{N}\) in a logical \(M\times N\) matrix form \(\Pi\), being:</p><p><span id="eq:map"></span>\[
+    \Pi_{m,n}=\begin{cases}
+    1 & \text{if } T(x_m)=y_n, \\
+    0 & \text{otherwise.}
+    \end{cases}
+    \tag{5}
+\]</p><p>\(x_m \in \mathcal{M}\) and \(y_n\in \mathcal{N}\) in (<a href="#eq:map" class="ref">5</a>) refer to mesh points with indices \(m,n\in\mathbb{N}\). We now introduce dependence of \(\mathbf{C}\) on variable \(I\) to refer to the \(I\times I\) finite approximation of \(\mathbf{C}_{\infty}\) in (<a href="#eq:Cinf" class="ref">4</a>), that is \(\textbf{C}(I)\in \mathbb{R}^{I\times I}\). The ZoomOut method refines functional maps \(\textbf{C}(I)\) through iterative increments of \(I\), resulting in progressively larger and finer functional maps (see <a href="#fig:zoomout" class="figref">Fig.&nbsp;3</a>). The method seeks to force orthonormality of <em>sub-matrices</em> \(\textbf{C}(I)\) and thus ensuring locally area-preserving correspondences. It does so by minimising
+<span id="eq:ZoomOutGeneralConstraint"></span>\[
+\begin{aligned}
+\begin{matrix} \\
+\text{min} \\ \Pi
+\end{matrix}
+ \sum_{I}^{I_{max}} \frac{1}{I} \left \| \textbf{C}^\intercal(I)\textbf{C}(I)-\textbf{I}_{I\times  I}\right \|^2_{F},
+    \tag{6}
+    \end{aligned}
+\]</p><p><span id="eq:ZoomOutGeneralConstraint2"></span>\[
+        \text{s.t.} \, \textbf{C}(I)={(\Phi^{\mathcal{M}}_I)}^+\Pi\Phi^{\mathcal{N}}_I
+        \tag{7}
+\]
+where \(F\) indicates the Frobenius norm, \(\textbf{I}_{I\times  I}\) the identity matrix of size \(I\) and \(()^+\) denotes pseudo-inverse (note that \(M\gg I\)). The constraint in (<a href="#eq:ZoomOutGeneralConstraint" class="ref">6</a>) ensures sub-matrices of \(\textbf{C}(I_{max})\) (i.e. \(\textbf{C}(I)\)) arise from a point-to-point map \(\Pi\). ZoomOut (<a href="references.html#ref-melzi2019zoomout" class="citation" title="ZoomOut: spectral upsampling for efficient shape correspondence">Melzi et al., 2019</a>) proposes splitting this optimisation problem into two sub-problems solved iteratively. That is, given \(I_{max}\) the maximum eigenvalue index we are considering, and the functional map initialisation \(\mathbf{C}(I_{initial})=\textbf{I}_{I_{initial}\times I_{initial}}\) with \(0&lt;I_{initial}&lt;I_{max}\leq \text{min}(M,N)\), compute iteratively:</p><p><span id="eq:line4alg1"></span>\[
+    \Pi= \begin{matrix}
+\\ \arg \text{min}
+\\ \Pi
+\end{matrix} \left \| \Pi \Phi^{\mathcal{N}}_I\textbf{C}^\intercal(I)-\Phi^{\mathcal{M}}_I \right \|^2_{F}
+\tag{8}
+\]</p><p><span id="eq:line6alg1"></span>\[
+    \textbf{C}(I+1)=(\Phi^{\mathcal{M}}_{I+1})^\intercal\mathbf{A}^{\mathcal{M}}\Pi\Phi^{\mathcal{N}}_{I+1}
+    \tag{9}
+\]</p><p>for \(I=I_{initial},\dots,I_{max}-1\). Equation (<a href="#eq:line4alg1" class="ref">8</a>) seeks to minimise the cost presented in (<a href="#eq:ZoomOutGeneralConstraint" class="ref">6</a>), and (<a href="#eq:line6alg1" class="ref">9</a>) presents the relaxed form of the constraint in (<a href="#eq:ZoomOutGeneralConstraint2" class="ref">7</a>) as it penalises the image of \(\Pi\Phi^{\mathcal{N}}_I\textbf{C}^\intercal(I)\) lying outside the span of \(\Phi^{\mathcal{M}}_I\) (i.e. it seeks to ensure that map \(\textbf{C}(I)\), given a proper point-to-point map \(\Pi\), maps one eigenbasis to the other as \(\Phi^{\mathcal{M}}_I\textbf{C}(I)=\Pi\Phi^{\mathcal{N}}_I\)). The orthonormality of \(\Phi^{\mathcal{M}}_I\) with respect to its inner product with the mesh&#x27;s lumped area matrix \(\mathbf{A}^\mathcal{M}\in \mathbb{R}^{M\times M}\) (\(\mathbf{A}^\mathcal{M}\) is a diagonal matrix containing the sum of the areas associated to node \(m\) and its neighbours) allows substituting \((\Phi^{\mathcal{M}}_I)^+\) for \((\Phi^{\mathcal{M}}_I)^\intercal\mathbf{A}^{\mathcal{M}}\) in (<a href="#eq:line6alg1" class="ref">9</a>). Note that as values of \(I\) increase in (<a href="#eq:line6alg1" class="ref">9</a>), more columns are added to \(\Phi^\mathcal{M}_I\) and \(\Phi^\mathcal{N}_{I}\) and larger (and thus finer) functional maps \(\textbf{C}(I)\) are obtained. Once the iterative process finishes, (<a href="#eq:line4alg1" class="ref">8</a>) provides a point-to-point map \(\Pi\) between both surfaces. See (<a href="references.html#ref-melzi2019zoomout" class="citation" title="ZoomOut: spectral upsampling for efficient shape correspondence">Melzi et al., 2019</a>) for more detailed explanations of the method.</p><figure class="survey-figure" id="fig:zoomout">
+<img src="img/figure_zoomout.png" alt="Figure" loading="lazy">
+<figcaption><strong>Figure 3.</strong> Illustration of the ZoomOut method where size-increasing functional maps \(\mathbf{C}(I)\) are computed for a reference shape \(\mathcal{N}\) and a target shape \(\mathcal{M}\). The iteration process begins with a map \(\mathbf{C}(I_{initial})\) of size \({I_{initial}\times I_{initial}}\) which then evolves (is refined) and grows in size until becoming \(\mathbf{C}(I_{max})\) of size \({I_{max}\times I_{max}}\). The surface map is represented by the colour map on the object&#x27;s surface.</figcaption>
+</figure></div></section>
+
+        <!-- Prev / Next navigation -->
+        <div class="page-nav">
+            <a href="section-1-introduction.html" class="nav-btn prev-btn">← 1. Introduction</a>
+            <a href="section-3-3Dmapping.html" class="nav-btn next-btn">3. Time consistent and non-isometry robust surface mapping →</a>
+        </div>
+    </main>
+</div>
+
+<!-- Back to top button -->
+<button class="back-to-top" id="backToTop" aria-label="Back to top">↑</button>
+
+<!-- Scripts -->
+<script src="js/main.js"></script>
+
+</body>
+</html>

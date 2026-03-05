@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>3. Time consistent and non-isometry robust surface mapping — Time Consistent Surface Mapping for Deformable Object Shape Control</title>
+    <link rel="stylesheet" href="css/style.css">
+    <!-- KaTeX for math rendering -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"
+        onload="renderMathInElement(document.body, {
+            delimiters: [
+                {left: '\\[', right: '\\]', display: true},
+                {left: '\\(', right: '\\)', display: false},
+                {left: '$$', right: '$$', display: true},
+                {left: '$', right: '$', display: false}
+            ],
+            throwOnError: false
+        });"></script>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Source+Serif+4:ital,wght@0,400;0,600;1,400&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+</head>
+<body>
+
+<!-- Top navigation bar -->
+<nav class="top-nav" id="topNav">
+    <div class="nav-inner">
+        <a href="index.html" class="nav-title">TIME-CONSISTENT SURFACE MAPPING FOR SHAPE CONTROL</a>
+        <div class="nav-section-select">
+            <select id="sectionSelect" onchange="if(this.value) window.location.href=this.value;">
+                <option value="index.html">Home</option>
+<option value="section-1-introduction.html">1. Introduction</option>
+<option value="section-2-3Dmappingintro.html">2. Functional maps</option>
+<option value="section-3-3Dmapping.html" selected>3. Time consistent and non-isometry robust surface mapping</option>
+<option value="section-4-sectionShapeControl.html">4. Shape control application</option>
+<option value="section-5-conclusions.html">5. Conclusions</option>
+<option value="references.html">References</option>
+            </select>
+        </div>
+        <div class="nav-links">
+            <a href="index.html">Home</a>
+            <a href="references.html">References</a>
+        </div>
+        <button class="nav-toggle" id="navToggle" aria-label="Toggle navigation">
+            <span></span><span></span><span></span>
+        </button>
+    </div>
+</nav>
+
+<!-- Hero / Paper header (only on index page) -->
+<header class="hero hidden">
+    <div class="hero-inner">
+        <p class="hero-journal">IEEE T-ASE 2025</p>
+        <h1 class="hero-title">Time Consistent Surface Mapping for Deformable Object Shape Control</h1>
+        <p class="hero-authors">Ignacio Cuiral-Zueco, Gonzalo López-Nicolás</p>
+        <p class="hero-affiliations">I. Cuiral-Zueco and G. López-Nicolás are with Instituto de Investigación en Ingeniería de Aragón, Universidad de Zaragoza, Spain.  ignaciocuiral@unizar.es,  gonlopez@unizar.es.</p>
+    </div>
+</header>
+
+<!-- Main layout: sidebar + content -->
+<div class="layout">
+
+    <!-- Sidebar / Table of Contents -->
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar-inner">
+            <h3 class="sidebar-title">Contents</h3>
+            <nav class="sidebar-nav" id="toc">
+                <ul class="toc-list"><li class="toc-section "><a href="section-1-introduction.html">1. Introduction</a>
+</li>
+<li class="toc-section "><a href="section-2-3Dmappingintro.html">2. Functional maps</a>
+</li>
+<li class="toc-section active"><a href="section-3-3Dmapping.html">3. Time consistent and non-isometry robust surface mapping</a>
+<ul>
+<li class="toc-subsection"><a href="#sect:initialisationofC">3.1. Initialization of $\mathbf{C}(I,k=1)$</a>
+</li>
+<li class="toc-subsection"><a href="#section:consistencybasis">3.2. Time consistency of basis $\Phi^{\mathcal{M}}_{I_{max}}$ and object point tracking</a>
+</li>
+<li class="toc-subsection"><a href="#section:consistencymaps">3.3. Time consistency of functional maps $\mathbf{C}(I_{max},k)$</a>
+</li>
+<li class="toc-subsection"><a href="#section:robustness">3.4. Robustness to non-isometries</a>
+</li>
+</ul>
+</li>
+<li class="toc-section "><a href="section-4-sectionShapeControl.html">4. Shape control application</a>
+</li>
+<li class="toc-section "><a href="section-5-conclusions.html">5. Conclusions</a>
+</li></ul>
+            </nav>
+            <div class="sidebar-refs">
+                <a href="references.html" class="sidebar-refs-link">References</a>
+            </div>
+        </div>
+    </aside>
+
+    <!-- Main content area -->
+    <main class="content">
+        <section class="section-content"><h2 id="3Dmapping" class="section-heading"><span class="sec-num">3</span> Time consistent and non-isometry robust surface mapping</h2>
+<div class="section-body"><p>So far, we discussed surface maps \(\Pi\) between two static shapes \(\mathcal{M}\) and \(\mathcal{N}\). Our goal now is to provide maps through time iterations \(k \in \mathbb{N}\) between an evolving current shape \(\mathcal{M}(k)\) and a target shape \(\mathcal{N}\). Such maps can then be used to deform \(\mathcal{M}(k)\) towards \(\mathcal{N}\) in a shape control strategy like the one introduced in sect. <a href="section-4-sectionShapeControl.html#sectionShapeControl" class="ref">4</a>. For effective shape control, as the object deforms, we want functional maps \(\mathbf{C}(I_{max},k)\) and point-to-point maps \(\Pi(k)\) to evolve smoothly and thus be time consistent (note dependence on \(k\) has been introduced). We identified three conditions to achieve consistency and smooth map evolution in real-world applications with deformable objects: (i) <strong>Time consistency of basis \(\Phi^\mathcal{M}_{I_{max}}(k)\)</strong> (<a href="#section:consistencybasis" class="secref">Section&nbsp;3.2</a>), (ii) <strong>Time consistency of functional maps \(\mathbf{C}(I_{max},k)\)</strong> (<a href="#section:consistencymaps" class="secref">Section&nbsp;3.3</a>), and (iii) <strong>Robustness to non-isometries</strong> (<a href="#section:robustness" class="secref">Section&nbsp;3.4</a>).
+To address these challenges, we propose a solution developed in the following sections and embodied in a compact and practical form in Algorithm <a href="#alg:timeconsistentZoomout" class="ref">1</a>. Our proposed solution yields a time-consistent surface map \(\Pi(k)\) that, when applied to a set of points \(\mathbf{Y} \in \mathbb{R}^{N \times 3}\) from the target shape \(\mathcal{N}\), generates the set of points \(\Pi(k)\mathbf{Y}\in \mathbb{R}^{M \times 3}\) that are mapped to points \(\mathbf{X} \in \mathbb{R}^{M \times 3}\) from the current shape \(\mathcal{M}\). These point maps can be incorporated into a shape control scheme, as explained in <a href="section-4-sectionShapeControl.html#sectionShapeControl" class="secref">Section&nbsp;4</a>.</p><div class="algorithm-block" id="alg:timeconsistentZoomout">
+<div class="algo-caption"><strong>Algorithm.</strong> Time consistent and non-isometry robust method.</div>
+<div class="algo-body">
+<div class="algo-line" style="padding-left:0em"><span class="algo-keyword">Require:</span> $k > 0$ <span class="algo-comment">▹ Current time iteration.</span></div>
+<div class="algo-line" style="padding-left:0em"><span class="algo-keyword">Require:</span> $0<I_{initial}\leq I_{update}<I_{max}\leq\min(M,N)$.</div>
+<div class="algo-line" style="padding-left:0em"><span class="algo-keyword">if $k=1$ then</span> </div>
+<div class="algo-line" style="padding-left:2em">$I=I_{initial}$</div>
+<div class="algo-line" style="padding-left:2em">Initialise  $\textbf{C}(I,k=1)$ <span class="algo-comment">▹ 3.1</span></div>
+<div class="algo-line" style="padding-left:0em"><span class="algo-keyword">else</span> </div>
+<div class="algo-line" style="padding-left:2em">Time consistent update of $\Phi^{\mathcal{M}}_{I_{max}}(k)$ <span class="algo-comment">▹ 3.2</span></div>
+<div class="algo-line" style="padding-left:2em">$I=I_{update}$</div>
+<div class="algo-line" style="padding-left:2em">$\textbf{C}(I,k)=\textbf{C}(I_{update},k-1)$</div>
+<div class="algo-line" style="padding-left:2em"> <span class="algo-comment">▹ 3.3</span></div>
+<div class="algo-line" style="padding-left:2em">$J=I_{update}$</div>
+<div class="algo-line" style="padding-left:0em"><span class="algo-keyword">end if</span></div>
+<div class="algo-line" style="padding-left:0em"><span class="algo-keyword">while $I\leq I_{max}-1$</span> </div>
+<div class="algo-line" style="padding-left:2em">$\Pi(k)= \begin{matrix} \\ \arg \text{min} \\ \Pi(k) \end{matrix} \left \| \Pi(k) \Phi^{\mathcal{N}}_J\textbf{C}^\intercal(I,k)-\Phi^{\mathcal{M}}_I(k) \right \|^2_{F}$</div>
+<div class="algo-line" style="padding-left:2em">$I=I+1$</div>
+<div class="algo-line" style="padding-left:2em">$J= \begin{matrix} \\ \text{max} \\ r \end{matrix}\{r \mid \lambda^{\mathcal{N}}_r \leq \lambda^{\mathcal{M}}_I(k) \rho(k) \}$ <span class="algo-comment">▹ 3.4</span></div>
+<div class="algo-line" style="padding-left:2em">$\textbf{C}(I,k)=(\Phi^{\mathcal{M}}_I(k))^\intercal\mathbf{A}^{\mathcal{M}}(k)\Pi(k)\Phi^{\mathcal{N}}_J(k)$</div>
+<div class="algo-line" style="padding-left:0em"><span class="algo-keyword">end while</span></div>
+<div class="algo-line" style="padding-left:0em"><span class="algo-keyword">return</span> $\Pi(k), \mathbf{C}(I_{max},k)$</div>
+</div>
+</div></div>
+<h3 id="sect:initialisationofC" class="section-heading"><span class="sec-num">3.1</span> Initialization of $\mathbf{C}(I,k=1)$</h3>
+<div class="section-body"><p>As previously stated, certain shape characteristics, such as symmetries, may result in numerous solutions for functional maps \(\mathbf{C}(I,k)\) that present similar minima. We now tackle the problem of defining an initial solution that is appropriate for a shape control application. One may arbitrarily define an initial solution \(\mathbf{C}(I,k=1)=\mathbf{I}_{I\times I}\), like ZoomOut does. However, this initialization is not appropriate for shape control given two main reasons:</p><p>1) Functional maps do not straightforwardly differentiate between surface orientations and inversions. An initialization \(\mathbf{C}(I,k=1)=\mathbf{I}_{I\times I}\) may result in a solution that requires <em>inverting</em> object surface, thus leading to the infeasibility of the control task and to object collapse. Methods in the functional map literature such as (<a href="references.html#ref-ren2018continuous" class="citation" title="Continuous and orientation-preserving correspondences via functional maps">Ren et al., 2018</a>) can deal with this limitation as they also consider the surface orientation through its normals.</p><p>2) Even when considering surface orientation, two mapping solutions that share similar minima might lead to very different control action requirements (e.g., unnecessarily rotating a symmetric object 180º around its symmetry axis). It is desirable to obtain the mapping solution that leads to the least Euclidean distance error. Methods such as (<a href="references.html#ref-eisenberger2020smooth" class="citation" title="Smooth shells: Multi-scale shape registration with functional maps">Eisenberger et al., 2020</a>) consider extrinsic error in their initialization, thus achieving more desirable solutions for our particular application of shape control.</p><p>Initialization is not required to be as fast as in-loop processes, and a more time-costly method such as (<a href="references.html#ref-ren2018continuous" class="citation" title="Continuous and orientation-preserving correspondences via functional maps">Ren et al., 2018</a>) or (<a href="references.html#ref-eisenberger2020smooth" class="citation" title="Smooth shells: Multi-scale shape registration with functional maps">Eisenberger et al., 2020</a>) can be applied to achieve an initial solution that can be later updated using our proposed method. However, seeking a more straightforward approach, in this paper we opted for an ICP (Iterative Closest Point) and closest neighbour based initialization of \(\mathbf{C}(I_{initial},k=1)\). We conduct an ICP optimisation between the two sets of point coordinates \(\mathbf{Y}\in\mathbb{R}^{N\times 3}\) (which stacks the node positions of the target mesh) and \(\mathbf{X}\), thus obtaining a rigidly aligned set of point coordinates \(\mathbf{X}_{\mathrm{ICP}}\in\mathbb{R}^{M\times 3}\). A closest neighbour search between \(\mathbf{X}_{\mathrm{ICP}}\) and \(\mathbf{Y}\) provides us with a point-to-point map \(\Pi(k)\) that allows to compute our initial functional map solution:
+ 
+<span id="eq:initializationC"></span>\[
+    \textbf{C}(I_{initial},k=1)=(\Phi^{\mathcal{M}}_{I_{initial}}(k))^\intercal\mathbf{A}^{\mathcal{M}}(k)\Pi(k)\Phi^{\mathcal{N}}_J,
+    \tag{10}
+\]</p><p>where the considered amount of eigenvectors \(J\) in \(\Phi^{\mathcal{N}}_J(k)\) is responsible for the robustness to non-isometries. The computation of \(J\) will be further explained in <a href="#section:robustness" class="secref">Section&nbsp;3.4</a>.</p></div>
+<h3 id="section:consistencybasis" class="section-heading"><span class="sec-num">3.2</span> Time consistency of basis $\Phi^{\mathcal{M}}_{I_{max}}$ and object point tracking</h3>
+<div class="section-body"><p>The time consistency of the basis \(\Phi^\mathcal{M}_{I_{max}}(k)\) is a necessary (but not sufficient) condition for the consistency of functional maps \(\mathbf{C}(I_{max},k)\) and point-to-point maps \(\Pi(k)\) across iterations. Consider \(\Phi^\mathcal{M}_{I_{max}}(k=1)\) our reference basis. Computing new bases across iterations \(k&gt;1\) using newly retrieved object points \(\mathbf{X}_{\mathrm{ret}}(k)\in \mathbb{R}^{M_{\mathrm{ret}}(k)\times 3}\) (\(M_{ret}(k)\) varies with time and is not necessarily equal to \(M\)) results in two main issues:
+<ul><li>ıtem Each row in basis \(\Phi^\mathcal{M}_{I_{max}}(k)\) corresponds directly to a specific point on the object&#x27;s surface. However, variations occur between iterations due to factors like object movement, deformation, camera noise, and irregular sampling patterns. These variations affect the number of retrieved points (\(M_{\mathrm{ret}}(k)\neq M\)), their 3D positions, and their associated row indexes, causing an inconsistency in the row-to-point correspondence of \(\Phi^\mathcal{M}_{I_{max}}(k)\) across iterations. Maintaining this consistency is essential, whether for tracking object points (e.g., for computing a deformation Jacobian) or for properly updating functional maps \(\mathbf{C}(I_{max},k)\) across iterations.
+    ıtem Furthermore, properly updating \(\Phi^\mathcal{M}_{I_{max}}(k)\) would require analysing the sign of the eigenvectors that comprise the basis, as the signs of the eigenvectors are arbitrarily defined and can change among time iterations \(k\).</li></ul>
+Consequently, we need to update basis \(\Phi^\mathcal{M}_{I_{max}}(k)\) in a manner that preserves the row-to-point correspondence and the signs of eigenvectors across iterations.</p><p>Our approach serves a dual purpose. First, it solves the time inconsistency of the basis \(\Phi^\mathcal{M}_{I_{max}}(k)\) by ensuring a consistent correspondence between rows of \(\Phi^\mathcal{M}_{I_{max}}(k)\) and points on the object&#x27;s surface. Second, it provides a time consistent vector \(\mathbf{X}(k)\in \mathbb{R}^{M\times3}\), which tracks the movement of the same set of object points (from the initial instant) over time. Through the use of \(\mathbf{X}(k)\) it becomes possible to compute the deformation Jacobian of the object and to define an error vector that remains time-consistent for shape control purposes (the control system will be explained in more detail in <a href="section-4-sectionShapeControl.html#sectionShapeControl" class="secref">Section&nbsp;4</a>).</p><p>We first introduce matrix \(\Pi^\mathcal{M}(k)\in\mathbb{R}^{M\times M_{\mathrm{ret}}(k)}\) which, in the fashion of \(\Pi(k)\), constitutes the point-map between newly retrieved points \(\mathbf{X}_{\mathrm{ret}}\in \mathbb{R}^{M_{\mathrm{ret}}(k)\times3}\) and the time-consistent tracked points from the previous iteration \(\mathbf{X}(k-1)\). In each iteration \(k&gt;1\), \(\Pi^\mathcal{M}(k)\) is initialised through a closest neighbour search between point positions stacked in \({\mathbf{X}}_{\mathrm{ret}}(k)\) and \({\mathbf{X}}(k-1)\in \mathbb{R}^{M\times3}\). This initialization facilitates the convergence of the next iterative process towards an embedding-coherent mapping solution in which the object moves and deforms continuously in space. The already initialised map \(\Pi^\mathcal{M}(k)\) is updated and refined in a coarse-to-fine manner for increasing values of \(I\), that is for \(I=I_{update},\dots,I_{max}-1\) we iteratively compute:</p><p><span id="eq:timeconsistencycomput"></span>\[
+\Pi^\mathcal{M}(k)\mkern-4mu
+= \\
+=\mkern-4mu \smash[b]{\mathop{\arg \min}_{\Pi^\mathcal{M}(k)}}\mkern-4mu \left\| \Pi^\mathcal{M}(k) \Phi^{\mathcal{M}}_{\mathrm{ret},I}(k)(\textbf{C}^\mathcal{M}(I,k))^{\intercal} - \Phi^{\mathcal{M}}_{I}(k\mkern-4mu-\mkern-4mu1) \right\|^2_{F}\mkern-4mu.
+\tag{11}
+\]</p><p><span id="eq:timeconsistencycomput1"></span>\[
+    \mathbf{C}^\mathcal{M}(I+1,k)=(\Phi^{\mathcal{M}}_{I+1}(k\mkern-4mu-\mkern-4mu1))^\intercal\mathbf{A}_{}^{\mathcal{M}}(k\mkern-4mu-\mkern-4mu1)\Pi^\mathcal{M}(k)\Phi^{\mathcal{M}}_{\mathrm{ret},I+1}(k),
+    \tag{12}
+\]
+being \(\Phi^{\mathcal{M}}_{\mathrm{ret},I}(k)\in\mathbb{R}^{M_{\mathrm{ret}}\times I}\), \(\Phi^{\mathcal{M}}_{\mathrm{ret},I+1}(k)\in\mathbb{R}^{M_{\mathrm{ret}}\times I+1}\) in (<a href="#eq:timeconsistencycomput" class="ref">11</a>) and (<a href="#eq:timeconsistencycomput1" class="ref">12</a>) the basis obtained from the newly retrieved set of object points truncated to the \(I\)-th and (\(I+1\))-th eigenvector respectively.</p><p>Functional map \(\mathbf{C}^\mathcal{M}\) in (<a href="#eq:timeconsistencycomput1" class="ref">12</a>) (with elements \(c^\mathcal{M}_{i,j}(k)\)) maps the previous state (time consistent) basis \(\Phi^\mathcal{M}_{I_{max}}(k-1)\) and the obtained basis from the newly retrieved set of points \(\Phi^\mathcal{M}_{\mathrm{ret},I_{max}}(k)\). Using \(\mathbf{C}^\mathcal{M}\), the diagonal matrix \(\mathbf{C}^\mathcal{M}_{\mathrm{sgn}}(k)\in\mathbb{R}^{I_{max}\times I_{max}}\) is computed:</p><p><span id="eq:diagCsgn"></span>\[
+    \mathbf{C}^\mathcal{M}_{\mathrm{sgn}}(k)=\text{blkdiag}(\{\text{sgn}(c^\mathcal{M}_{i,i}(k))\}^{I_{max}}_{i=1}),
+    \tag{13}
+\]</p><p>being \(\text{sgn}()\) the sign operator and \(\text{blkdiag}()\) the block diagonal matrix building operator. Matrix \(\mathbf{C}^\mathcal{M}_{\mathrm{sgn}}(k)\) contains the sign correction that should be applied to eigenvectors in \(\Phi^\mathcal{M}_{\mathrm{ret},I_{max}}(k)\) in order to be sign-consistent with the previous state basis. Note that map \(\Pi^\mathcal{M}(k)\) contains the point mapping that allows to pick and re-order the rows of \(\Phi^\mathcal{M}_{\mathrm{ret},I_{max}}(k)\) so that they are consistent with the rows of \(\Phi^\mathcal{M}_{I_{max}}(k-1)\) in the sense of both representing the same set of tracked object points. Combining the row re-ordering provided by map \(\Pi^\mathcal{M}(k)\) from (<a href="#eq:timeconsistencycomput" class="ref">11</a>) and the sign correction provided by \(\mathbf{C}^\mathcal{M}_{\mathrm{sgn}}(k)\) from (<a href="#eq:diagCsgn" class="ref">13</a>) we compute a time consistent basis:</p><p><span id="eq:signconsistent"></span>\[
+    \Phi^{\mathcal{M}}_{I_{max}}(k)=\Pi^\mathcal{M}(k)\Phi^{\mathcal{M}}_{\mathrm{ret},I_{max}}(k)\mathbf{C}^\mathcal{M}_{\mathrm{sgn}}(k).
+    \tag{14}
+\]</p><p>Then, also using \(\Pi^\mathcal{M}(k)\) from (<a href="#eq:timeconsistencycomput" class="ref">11</a>), the positions of the object tracked points \(\mathbf{X}(k)\) can be updated as</p><p><span id="eq:objecttrackedpoints"></span>\[
+    \mathbf{X}(k)=\Pi^\mathcal{M}(k)\mathbf{X}_{\mathrm{ret}}(k).
+    \tag{15}
+\]</p></div>
+<h3 id="section:consistencymaps" class="section-heading"><span class="sec-num">3.3</span> Time consistency of functional maps $\mathbf{C}(I_{max},k)$</h3>
+<div class="section-body"><p>Even if time consistency of the basis \(\Phi^\mathcal{M}_{I_{max}}(k)\) is achieved, when shapes undergo deformations or present symmetries, new or multiple similar minima might arise in the computation of \(\mathbf{C}(I_{max},k)\). This can lead to significantly different functional map solutions \(\mathbf{C}(I_{max},k)\) across iterations that, in turn, lead to time inconsistent point-to-point maps \(\Pi(k)\). For this reason, our method needs to ensure time consistency of functional maps \(\mathbf{C}(I_{max},k)\).
+ 
+ 
+To address this problem, our method exploits the fact that slow/smooth deformations do not largely affect geometry features presented at low frequencies. We propose taking advantage of sub-matrices from previously computed functional maps \(\textbf{C}(I_{max},k-1)\) under the assumption that \(\Phi^{\mathcal{M}}_I(k) \approx  \Phi^{\mathcal{M}}_I(k-1)\) for low \(I=I_{update}\). That is, We initialise the functional map \(\mathbf{C}(I_{update},k)\) of iteration \(k&gt;1\) with a matrix equal to the top-left \(I_{update} \times I_{update}\) sub-matrix of \(\textbf{C}(I_{max},k-1)\) (see <a href="#fig:timeconsistent" class="figref">Fig.&nbsp;4</a>). Thus, elements of \(\mathbf{C}(I_{update},k)\) are:</p><p>\[
+    c_{i,j}(I_{update},k)=c_{i,j}(I_{max},k-1), \, \text{for} \; i,j=1,\dots,I_{update}.
+\]</p><p>This process not only allows updating the matching in a time-consistent manner (i.e. with time continuity), but also reduces the computational cost in iterations \(k&gt;1\) as the number of optimisations is reduced by \(I_{update}-I_{initial}\). Using our time-consistent basis \(\Phi^{\mathcal{M}}_{I_{max}}(k)\) from (<a href="#eq:signconsistent" class="ref">14</a>) (recall \(\Phi^{\mathcal{M}}_{I}(k)\) is \(\Phi^{\mathcal{M}}_{I_{max}}(k)\) truncated to the \(I\)-th column), we can iterate through increasing values of \(I=I_{update},...,I_{max}-1\) to refine point-to-point maps \(\Pi(k)\) and functional maps \(\textbf{C}(I,k)\):
+<span id="eq:mainAlg2Pi"></span>\[
+     \Pi(k)=
+     \\
+     \begin{matrix}
+\\ \arg \text{min}
+\\ \Pi(k)
+\end{matrix} \left \| \Pi(k) \Phi^{\mathcal{N}}_J\textbf{C}^\intercal(I,k)-\Phi^{\mathcal{M}}_I(k) \right \|^2_{F},
+    \tag{16}
+\]
+<span id="eq:mainAlg2C"></span>\[
+     \textbf{C}(I+1,k)=(\Phi^{\mathcal{M}}_{I+1}(k))^\intercal\mathbf{A}^{\mathcal{M}}(k)\Pi(k)\Phi^{\mathcal{N}}_J.
+     \tag{17}
+\]</p><p>Note that, even though we re-use data from the previous \(\textbf{C}(I_{max},k-1)\) to initialise our functional map estimation in iteration \(k\), in (<a href="#eq:mainAlg2C" class="ref">17</a>) we allow those elements of \(\textbf{C}(I_{update},k)\) that map low frequencies (i.e. \(c_{i,j}(I,k)\) with \(i,j\leq I_{update}\)) to be updated as well. Regarding the value of \(J\) in (<a href="#eq:mainAlg2Pi" class="ref">16</a>) and (<a href="#eq:mainAlg2C" class="ref">17</a>), the classic refining method in (<a href="references.html#ref-melzi2019zoomout" class="citation" title="ZoomOut: spectral upsampling for efficient shape correspondence">Melzi et al., 2019</a>) would be equivalent to setting \(J=I\). That is, truncating the current and target shape basis to the same number of columns (see how (<a href="section-2-3Dmappingintro.html#eq:line4alg1" class="ref">8</a>)-(<a href="section-2-3Dmappingintro.html#eq:line6alg1" class="ref">9</a>) do not require defining \(J\)). However, in the following section, we propose defining \(J\) to increase the robustness of the method to non-isometries.</p><figure class="survey-figure" id="fig:timeconsistent">
+<img src="img/figure_time_consistent.png" alt="Figure" loading="lazy">
+<figcaption><strong>Figure 4.</strong> Illustration of our time consistent surface mapping method. The first time iteration \(k=1\) requires to iterate from \(\mathbf{C}(I_{initial},k=1)\) to \(\mathbf{C}(I_{max},k=1)\). For \(k&gt;1\) the process begins with \(\mathbf{C}(I_{update},k)\), which is obtained as a sub-matrix of \(\mathbf{C}(I_{max},k-1)\).</figcaption>
+</figure></div>
+<h3 id="section:robustness" class="section-heading"><span class="sec-num">3.4</span> Robustness to non-isometries</h3>
+<div class="section-body"><p>A challenge of real setups is that there is no guarantee that the desired target shape constitutes an isometry of the current shape. Our method improves robustness against non-isometries, thus achieving adequate performance in real applications.</p><p>We will now develop on the computation of \(J\) in (<a href="#eq:mainAlg2Pi" class="ref">16</a>) and (<a href="#eq:mainAlg2C" class="ref">17</a>) to increase robustness to non-isometric deformations. In (<a href="references.html#ref-rodola2017partial" class="citation" title="Partial functional correspondence">Rodolà et al., 2017</a>), a method for matching an incomplete surface (i.e. a shape with missing parts) to its full version (i.e. the complete shape) was presented. This problem is referred to as partial functional correspondence. It is solved by taking advantage of the fact that the basis of the incomplete shape generates a subset of the basis of the complete shape. This leads to a non-square functional map \(\textbf{C}\) that presents a dominant slanted diagonal. This diagonal&#x27;s slope is proportional to the ratio of the shapes&#x27; areas \(A(\mathcal{N})/A(\mathcal{M})\), being \(\mathcal{N}\) the complete shape and \(\mathcal{M}\) the incomplete shape.</p><p>In (<a href="references.html#ref-melzi2019zoomout" class="citation" title="ZoomOut: spectral upsampling for efficient shape correspondence">Melzi et al., 2019</a>), in order to solve the partial correspondence problem, they propose an update rule of the basis&#x27; size (i.e. an update rule for \(I\) and \(J\)) that weakly enforces \(\textbf{C}\in \mathbb{R}^{I\times J}\) to be non-square and to present a slanted diagonal with a slope proportional to \(A(\mathcal{N})/A(\mathcal{M})\). One intuition behind the slanted diagonal slope is that the lower frequencies of the incomplete shape begin to appear <em>later</em> (in higher harmonic indexes) of the complete shape&#x27;s spectrum, and thus the slanted diagonal compensates for that.</p><p>Our method exploits the slanted-diagonal concept from a different perspective. The fact that the objects we want to control deform isotropically implies that non-isometric deformations mainly affect the object&#x27;s geometry in a narrow bandwidth of low frequency features. That is, if the object stretches, it will do it uniformly and surface details will be <em>dragged</em> along in a quasi-isometric manner. For this reason, we compensate for the frequency miss-match by enforcing a slanted diagonal with a slope</p><p><span id="eq:slope"></span>\[
+    \rho(k)=\sqrt{A(\mathcal{M}(k))/A(\mathcal{N})}.
+    \tag{18}
+\]</p><p>Note \(\rho\) in (<a href="#eq:slope" class="ref">18</a>) is inversely proportional to the square root of the slope of the partial correspondence problem in (<a href="references.html#ref-rodola2017partial" class="citation" title="Partial functional correspondence">Rodolà et al., 2017</a>) and (<a href="references.html#ref-melzi2019zoomout" class="citation" title="ZoomOut: spectral upsampling for efficient shape correspondence">Melzi et al., 2019</a>)). We enforce the slope \(\rho\) in our functional map solution by setting \(J\) of \(\lambda^\mathcal{N}_J\) to:
+<span id="eq:Jupdate"></span>\[
+    J=\begin{matrix}
+\\ \text{max}
+\\ r
+\end{matrix}\left\{r \mid \lambda^{\mathcal{N}}_r \leq \lambda^{\mathcal{M}}_I(k) \rho(k)\right\},
+    \tag{19}
+\]
+where \(\lambda^{\mathcal{N}}_J\), and respectively \(\lambda^{\mathcal{M}}_I\), are the eigenvalues associated to eigenvectors in columns \(I\) and \(J\) of the bases. Update of \(J\) (<a href="#eq:Jupdate" class="ref">19</a>) takes place between (<a href="#eq:mainAlg2Pi" class="ref">16</a>) and (<a href="#eq:mainAlg2C" class="ref">17</a>) and for the first computation of (<a href="#eq:mainAlg2Pi" class="ref">16</a>) is initialized as \(J=I_{update}\). The intuition behind our update rule is that lower frequency components (i.e. components associated to low eigenvalues \(\lambda^{\mathcal{M}}_i\)) are inversely proportional to their periods \(t^{\mathcal{M}}_i\) and therefore \(\lambda^{\mathcal{N}}_j/\lambda^{\mathcal{M}}_i=t^{\mathcal{M}}_i/t^{\mathcal{N}}_j\). We approximate the objects&#x27; period ratio \(t^{\mathcal{M}}_i/t^{\mathcal{N}}_j\) with the square root of the objects&#x27; area ratio \(\rho\) (<a href="#eq:slope" class="ref">18</a>) (<a href="#fig:robustnessmethod" class="figref">Fig.&nbsp;5</a>). Introducing (<a href="#eq:Jupdate" class="ref">19</a>) in Algorithm&nbsp;<a href="#alg:timeconsistentZoomout" class="ref">1</a> we enhance the retrieval of point-to-point matches in non-isometric deformation scenarios and, in some cases, (<a href="#eq:Jupdate" class="ref">19</a>) can become a critical element in the success of the method (see Fig.&nbsp;<a href="#matchComparisonFig" class="ref">6</a>). Note that (<a href="#eq:Jupdate" class="ref">19</a>) is not applied in the iterative refinement process (<a href="#eq:timeconsistencycomput" class="ref">11</a>)-(<a href="#eq:timeconsistencycomput1" class="ref">12</a>). This is because our method assumes a smooth deformation process, allowing the shapes of consecutive object states to be safely considered as isometries.</p><figure class="survey-figure" id="fig:robustnessmethod">
+<img src="img/nonisometry_2.png" alt="Figure" loading="lazy">
+<figcaption><strong>Figure 5.</strong> Process for choosing index \(J\) in non-isometric deformations (short beam to long beam). An initial trivial guess would be \(j=I\) for matching harmonic \(i=I\) to harmonic \(j=I\). We propose using (<a href="#eq:Jupdate" class="ref">19</a>) so \(i=I,j=J\) with \(J\) such that \(\lambda^\mathcal{N}_J\) is closer to \(\lambda^\mathcal{M}_I\rho\) (in this particular example \(\rho\approx 0.82\)). See how our guess (i.e. \(j=J\)) finds a better eigenvector correspondence (eigenvectors are depicted on the shapes with colour maps).</figcaption>
+</figure><figure class="survey-figure" id="matchComparisonFig">
+<div class="subfigures">
+<div class="subfigure">
+<img src="img/figure_3-a.png" alt="Zoomout \cite{melzi2019zoomout}" loading="lazy">
+<p class="subfig-caption">(Zoomout (<a href="references.html#ref-melzi2019zoomout" class="citation" title="ZoomOut: spectral upsampling for efficient shape correspondence">Melzi et al., 2019</a>))</p>
+</div>
+<div class="subfigure">
+<img src="img/figure_3-b.png" alt="Ours (Sect.\ref{section:robustness})" loading="lazy">
+<p class="subfig-caption">(Ours (Sect.<a href="#section:robustness" class="ref">3.4</a>))</p>
+</div>
+<div class="subfigure">
+<img src="img/figure_3-c.png" alt="Target shape" loading="lazy">
+<p class="subfig-caption">(Target shape)</p>
+</div>
+</div>
+<figcaption><strong>Figure 6.</strong> Example of a current shape \(\mathcal{M}\) (a, b) being matched to a target shape \(\mathcal{N}\) (c) by using the regular ZoomOut method (a) and our non-isometry robust method (b). Since the target shape has a significantly larger area than the current shape, ZoomOut&#x27;s area-preserving optimization leads to inconsistency, evident by the colour map&#x27;s discontinuity in the centre of the beam (a). Our method, using a slanted \(\mathbf{C}\) matrix, resolves the non-isometry between shapes.</figcaption>
+</figure></div></section>
+
+        <!-- Prev / Next navigation -->
+        <div class="page-nav">
+            <a href="section-2-3Dmappingintro.html" class="nav-btn prev-btn">← 2. Functional maps</a>
+            <a href="section-4-sectionShapeControl.html" class="nav-btn next-btn">4. Shape control application →</a>
+        </div>
+    </main>
+</div>
+
+<!-- Back to top button -->
+<button class="back-to-top" id="backToTop" aria-label="Back to top">↑</button>
+
+<!-- Scripts -->
+<script src="js/main.js"></script>
+
+</body>
+</html>
