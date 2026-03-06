@@ -4,6 +4,8 @@ This repository contains the MATLAB code for replicating the surface mapping res
 
 > **[1]** I. Cuiral-Zueco and G. López-Nicolás, *"Time Consistent Surface Mapping for Deformable Object Shape Control,"* IEEE Transactions on Automation Science and Engineering, doi: [10.1109/TASE.2025.3529180](https://doi.org/10.1109/TASE.2025.3529180).
 
+To access the paper and the user-friendly paper web page **[https://nachocz.github.io/time-consistent-surface-mapping/](https://nachocz.github.io/time-consistent-surface-mapping/)**
+
 ---
 ## Disclaimer
 
