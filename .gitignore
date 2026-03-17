@@ -34,3 +34,7 @@ Thumbs.db
 
 # Generated plots
 experiment_*_results.png
+
+# Polyscope / imgui config
+.polyscope.ini
+imgui.ini
