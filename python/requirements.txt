@@ -1,0 +1,5 @@
+numpy>=1.24
+scipy>=1.10
+polyscope>=2.1
+robust-laplacian>=0.2
+matplotlib>=3.7
