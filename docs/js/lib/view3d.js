@@ -145,6 +145,9 @@ export class MeshView {
             entry.capV = Math.ceil(n * 1.3);
             g.setAttribute('position', new THREE.BufferAttribute(new Float32Array(3 * entry.capV), 3));
             g.setAttribute('color', new THREE.BufferAttribute(new Float32Array(3 * entry.capV), 3));
+            // computeVertexNormals reuses an existing normal attribute: drop the old, smaller one,
+            // or the new vertices get no normals (dark, unlit triangles)
+            g.deleteAttribute('normal');
         }
         if (nf > entry.capF) {
             entry.capF = Math.ceil(nf * 1.3);
