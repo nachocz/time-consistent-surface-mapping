@@ -122,7 +122,7 @@ setTimeout(() => {
     state.fmap = { C: r.C, I: r.I, J: r.J, src, colors: pullColors(referenceColors(tgt.V), r.Pi) };
     paint0();
 
-    const tee = new World('tee'), lat = tee.lattice, topOf = (P) => Float64Array.from({ length: 3 * lat.M }, (_, i) => P[3 * lat.top[Math.floor(i / 3)] + (i % 3)]);
+    const tee = new World('tee', { goal: true }), lat = tee.lattice, topOf = (P) => Float64Array.from({ length: 3 * lat.M }, (_, i) => P[3 * lat.top[Math.floor(i / 3)] + (i % 3)]);
     state.tee = { rest: topOf(lat.rest), target: topOf(tee.target.P), F: lat.topTris, grippers: tee.grippers.map((g) => g.restPose.t) };
     paint3();
 

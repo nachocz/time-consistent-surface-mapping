@@ -8,7 +8,10 @@
 // (Rodrigues vector). The buffers are initialized with B small exploratory actions per
 // gripper, along each axis and back.
 
-export const CONTROL_DEFAULTS = { alpha: 0.3, B: 12, gamma: 0.2, lever: 10, maxTranslation: 0.5, maxRotation: 4 * Math.PI / 180, explore: [0.3, 2.5 * Math.PI / 180] };
+// Defaults: a small gain and step limits, for smooth actions; exploration actions larger
+// than the control steps, and a buffer that keeps them for a while, so that the responses
+// that estimate (23) stand out from the sampling noise of the tracked points.
+export const CONTROL_DEFAULTS = { alpha: 0.15, B: 24, gamma: 0.2, lever: 10, maxTranslation: 0.3, maxRotation: 2.5 * Math.PI / 180, explore: [0.5, 4 * Math.PI / 180] };
 
 // Solve the symmetric positive definite system A x = b (n x n, row-major) by Cholesky.
 function solveSpd(A, b, n) {

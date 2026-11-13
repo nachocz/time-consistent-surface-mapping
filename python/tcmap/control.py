@@ -22,12 +22,13 @@ import numpy as np
 
 @dataclass
 class ControlOptions:
-    alpha: float = 0.3             # gain of (24)
-    B: int = 12                    # buffer size (B >= 6)
+    """Lengths in cm and angles in rad, with the defaults of the interactive demos."""
+    alpha: float = 0.15            # gain of (24)
+    B: int = 24                    # buffer size (B >= 6)
     gamma: float = 0.2             # Tikhonov term of (23), in units of the scaled actions squared
     lever: float = 10.0            # rotations in U_g as the displacement at this distance
-    max_translation: float = 0.5   # step limits of the robots
-    max_rotation: float = np.radians(4.0)
+    max_translation: float = 0.3   # step limits of the robots
+    max_rotation: float = np.radians(2.5)
 
 
 class SequentialShapeController:

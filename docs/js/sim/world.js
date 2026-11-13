@@ -14,6 +14,8 @@ const DEG = Math.PI / 180;
 // Pieces of the experiments (Sec. 4.3) and of the simulations (Fig. 8). Gripper specs are
 // lattice nodes (i, j) with half-sizes (di, dj) in cells; poses relative to the rest shape:
 // rotation vector `rot` (rad) about the gripper center, then translation `move` (cm).
+// `target`: the target shape of the mapping pages; `goal`: the farther (more deformed)
+// target shape of the shape-control page, the same deformation about 1.35 times larger.
 export const SCENARIOS = {
     sheet: {
         title: 'Foam sheet',
@@ -21,6 +23,7 @@ export const SCENARIOS = {
         shape: { nu: 31, nv: 21, nz: 2, h: 1.0, chart: rectangle(24, 16) },
         grippers: [{ i: 1, j: 10, di: 1, dj: 2 }, { i: 29, j: 10, di: 1, dj: 2 }],
         target: [{ rot: [10 * DEG, -40 * DEG, 0], move: [2.5, 0, 1.5] }, { rot: [-10 * DEG, 40 * DEG, 0], move: [-2.5, 0, 1.5] }],
+        goal: [{ rot: [14 * DEG, -54 * DEG, 0], move: [3.4, 0, 2] }, { rot: [-14 * DEG, 54 * DEG, 0], move: [-3.4, 0, 2] }],
         motion: [{ rot: [25 * DEG, -35 * DEG, 0], move: [2, 1, 1] }, { rot: [-25 * DEG, 35 * DEG, 0], move: [-2, -1, 1] }],
         view: { from: [8, -34, 26], at: [0, 0, 1] },
     },
@@ -31,6 +34,7 @@ export const SCENARIOS = {
         grippers: [{ i: 1, j: 13, di: 1, dj: 2 }, { i: 25, j: 13, di: 1, dj: 2 }],
         fixed: [true, false],
         target: [{ rot: [0, 0, 0], move: [0, 0, 0] }, { rot: [0, 55 * DEG, 0], move: [-4, 0, 3] }],
+        goal: [{ rot: [0, 0, 0], move: [0, 0, 0] }, { rot: [0, 74 * DEG, 0], move: [-5.4, 0, 4] }],
         motion: [{ rot: [0, 0, 0], move: [0, 0, 0] }, { rot: [30 * DEG, 50 * DEG, 0], move: [-3.5, 1.5, 2.5] }],
         view: { from: [6, -30, 24], at: [0, 0, 1] },
     },
@@ -40,6 +44,7 @@ export const SCENARIOS = {
         shape: { nu: 29, nv: 29, nz: 2, h: 1.0, chart: disc(10, (th) => 0.78 + 0.32 * Math.cos(5 * (th - Math.PI / 2))) },
         grippers: [{ i: 3, j: 6, di: 1, dj: 1 }, { i: 25, j: 6, di: 1, dj: 1 }],
         target: [{ rot: [-20 * DEG, -35 * DEG, 0], move: [1.5, 0.5, 2] }, { rot: [-20 * DEG, 35 * DEG, 0], move: [-1.5, 0.5, 2] }],
+        goal: [{ rot: [-27 * DEG, -47 * DEG, 0], move: [2, 0.7, 2.7] }, { rot: [-27 * DEG, 47 * DEG, 0], move: [-2, 0.7, 2.7] }],
         motion: [{ rot: [20 * DEG, -30 * DEG, 0], move: [1.5, 1, 1.5] }, { rot: [-20 * DEG, 30 * DEG, 0], move: [-1.5, -1, 1.5] }],
         view: { from: [4, -30, 28], at: [0, 0, 0] },
     },
@@ -52,6 +57,7 @@ export const SCENARIOS = {
         },
         grippers: [{ i: 15, j: 1, di: 2, dj: 1 }, { i: 1, j: 21, di: 1, dj: 2 }],
         target: [{ rot: [40 * DEG, 0, 0], move: [0, 2, 2.5] }, { rot: [0, -40 * DEG, 0], move: [2, 0, 2.5] }],
+        goal: [{ rot: [54 * DEG, 0, 0], move: [0, 2.7, 3.4] }, { rot: [0, -54 * DEG, 0], move: [2.7, 0, 3.4] }],
         motion: [{ rot: [40 * DEG, 0, 20 * DEG], move: [0, 2, 2.5] }, { rot: [10 * DEG, -45 * DEG, 0], move: [2, 0, 2] }],
         view: { from: [10, -30, 28], at: [0, 1, 1] },
     },
@@ -60,7 +66,8 @@ export const SCENARIOS = {
 const relative = (spec, center) => aboutPoint(rotationFromVector(spec.rot || [0, 0, 0]), center, spec.move || [0, 0, 0]);
 
 export class World {
-    constructor(id, { arapIterations = 8 } = {}) {
+    // `goal`: use the scenario's goal (shape control) instead of its target as the target shape
+    constructor(id, { arapIterations = 8, goal = false } = {}) {
         const sc = SCENARIOS[id];
         this.id = id; this.scenario = sc;
         this.arapIterations = arapIterations;
@@ -81,7 +88,7 @@ export class World {
         this.blend = this.blendWeights();
         this.restSpec = this.grippers.map(() => ({ rot: [0, 0, 0], move: [0, 0, 0] }));
         this.initial = { P: lat.rest.slice(), poses: this.grippers.map((g) => g.restPose), quats: this.arap.snapshot() };
-        this.setTarget(sc.target);
+        this.setTarget(goal && sc.goal ? sc.goal : sc.target);
         this.reset();
     }
 

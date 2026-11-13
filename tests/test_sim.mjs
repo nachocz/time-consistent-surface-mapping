@@ -132,7 +132,7 @@ check('rule (19) on a compressed, bent beam: closer to the true match than J = I
 });
 
 check('closed loop (Sec. 4): the shape error decreases on the T-shaped piece', () => {
-    const s = new ControlSession(new World('tee'), { mapper: { step: 4 }, ntc: false });
+    const s = new ControlSession(new World('tee', { goal: true }), { mapper: { step: 4 }, ntc: false });
     for (let k = 0; k < 140; k++) s.step();
     const e = s.history.e, last = mean(e.slice(-20));
     assert.ok(last < 0.3 * e[0], `${e[0]} -> ${last}`);

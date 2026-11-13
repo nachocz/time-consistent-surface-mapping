@@ -115,7 +115,7 @@ function load() {
     busy.hidden = false;
     document.getElementById('note').textContent = `${SCENARIOS[settings.scenario].title}: ${SCENARIOS[settings.scenario].note}.`;
     setTimeout(() => {
-        world = cache[settings.scenario] || (cache[settings.scenario] = new World(settings.scenario));
+        world = cache[settings.scenario] || (cache[settings.scenario] = new World(settings.scenario, { goal: true }));
         restart();
         const skip = Math.min(Number(params.get('iterations')) || 0, K_MAX);
         for (let i = 0; i < skip; i++) iterate();
