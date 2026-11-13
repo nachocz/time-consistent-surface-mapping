@@ -103,7 +103,10 @@ def block_content(path: str, bundles: Callable[[str], str]) -> str:
 
 
 def data_uri(path: str) -> str:
-    return f"data:{MIME[Path(path).suffix]};base64," + base64.b64encode((DOCS / path).read_bytes()).decode("ascii")
+    data = (DOCS / path).read_bytes()
+    if Path(path).suffix == ".svg":         # text: the same output whatever the line endings of the checkout
+        data = data.replace(b"\r\n", b"\n")
+    return f"data:{MIME[Path(path).suffix]};base64," + base64.b64encode(data).decode("ascii")
 
 
 def render(html: str, bundles: Callable[[str], str]) -> str:
