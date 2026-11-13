@@ -1,126 +1,64 @@
-# Time-Consistent Surface Mapping — Python Implementation
+# Time-consistent surface mapping in Python
 
-Python implementation of the method described in:
+A Python implementation of the method of
 
-> I. Cuiral-Zueco and G. López-Nicolás, "Time Consistent Surface Mapping for Deformable Object Shape Control," *IEEE Transactions on Automation Science and Engineering*, 2025. DOI: [10.1109/TASE.2025.3529180](https://doi.org/10.1109/TASE.2025.3529180)
+> I. Cuiral-Zueco and G. López-Nicolás, "Time Consistent Surface Mapping for Deformable Object Shape Control," *IEEE Transactions on Automation Science and Engineering*, vol. 22, pp. 11099-11111, 2025, [doi: 10.1109/TASE.2025.3529180](https://doi.org/10.1109/TASE.2025.3529180),
 
-## Overview
+with a 3D viewer of the five recorded experiments. It follows the equations of the paper and, where they differ, the reference MATLAB code of this repository (see below). The same method runs in the browser in the [interactive demos](https://ignaciocuiral.com/time-consistent-surface-mapping/).
 
-This package implements the **time-consistent surface mapping** algorithm for computing point-to-point correspondences between deforming 3D surfaces. The method combines:
-
-- **Functional maps** via Laplace-Beltrami eigenbasis
-- **ZoomOut** coarse-to-fine refinement (Melzi et al., 2019)
-- **Time-consistent basis tracking** across frames
-- **Non-isometry robustness** through slanted-diagonal eigenvalue matching
-
-## Installation
+## Install and run
 
 ```bash
-cd python
 python -m venv .venv
+.venv/Scripts/activate              # Windows; on Linux and macOS: source .venv/bin/activate
+pip install -r python/requirements.txt
 
-# Windows
-.venv\Scripts\activate
-# Linux/macOS
-source .venv/bin/activate
-
-pip install -r requirements.txt
+python python/demo.py --experiment 5                          # 3D viewer: play the experiment
+python python/demo.py --experiment 1 --no-gui                 # whole sequence, printed summary
+python python/demo.py --experiment 3 --no-gui --plot out.png  # and the two shape errors over time
 ```
 
-### Dependencies
+The recorded meshes (`data/experiment_data_*.mat`) are stored with Git LFS: clone the repository with Git LFS installed, or run `git lfs pull`.
 
-| Package | Purpose |
+The viewer shows, for every frame, the mesh of the experiment colored by the map of ZoomOut computed at that frame (left), the tracked mesh colored by the time-consistent map (middle), and the target with its reference colors (right), with the two shape errors over time. With `--no-gui`, the summary on this computer (Python 3.12, NumPy and SciPy) is:
+
+| Experiment | Points per mesh | Time-consistent: ‖e‖ (largest change between frames) | ZoomOut every frame: ‖e_NTC‖ (largest change) | Time per frame |
+|---|---|---|---|---|
+| 1 Mexican hat | 527-559 | 2.02 → 0.19 (0.22) | 0.23 to 8.70 (8.11) | 37 ms |
+| 2 T-shaped pool noodle | 297-374 | 3.25 → 0.47 (0.19) | 0.48 to 7.52 (6.78) | 21 ms |
+| 3 Pillow | 390-438 | 2.06 → 0.96 (0.24) | 0.39 to 9.21 (8.77) | 30 ms |
+| 4 Rectangular foam sheet | 573-727 | 4.79 → 0.79 (0.30) | 0.81 to 11.51 (10.58) | 59 ms |
+| 5 Foam cut-out | 416-470 | 3.37 → 0.80 (0.23) | 0.47 to 11.04 (10.30) | 31 ms |
+
+Errors in meters, ‖e‖ = (Σ_m ‖e_m‖²)^½ as in (21). The recorded sequences are the experiments of the paper, whose robots were driven by the MATLAB implementation; this code recomputes the maps from the recorded meshes.
+
+## Package
+
+| Module | Content |
 |---|---|
-| `numpy` | Array operations |
-| `scipy` | Sparse matrices, eigendecomposition, I/O |
-| `polyscope` | Interactive 3D mesh visualisation |
-| `robust-laplacian` | (optional) Alternative Laplacian computation |
-| `matplotlib` | 2D plots (error curves, timing) |
-
-## Quick start
-
-```bash
-# Run all 5 experiments with 3D visualisation
-python demo.py
-
-# Run specific experiments
-python demo.py --experiments 1 3
-
-# Headless mode (no GUI, prints errors only)
-python demo.py --experiments 1 --no-gui
-```
-
-## Package structure
-
-```
-python/
-├── demo.py                     # Main demo script
-├── requirements.txt
-└── tcmap/
-    ├── __init__.py
-    ├── mesh.py                 # Cotangent Laplacian, eigenbasis, Mesh class
-    ├── fmap.py                 # Functional maps: ZoomOut, initialisation
-    ├── time_consistent.py      # Time-consistent pipeline (Algorithm 1)
-    ├── data_loader.py          # Load MATLAB .mat experiment data
-    └── visualization.py        # Polyscope 3D visualisation
-```
-
-## API usage
+| `tcmap/mesh.py` | `Mesh`, the cotangent Laplacian and lumped areas, and the Laplace-Beltrami eigenbasis (Sec. 2.1) |
+| `tcmap/fmap.py` | functional maps from point maps (9), (17), point maps from functional maps (8), (16), the rule (19) for J, and the coarse-to-fine refinement (ZoomOut) |
+| `tcmap/icp.py` | rigid ICP for the first map (Sec. 3.1) |
+| `tcmap/mapping.py` | `TimeConsistentMapper` (Algorithm 1: initialization, tracking of the basis and of the points, warm start, non-isometry rule), and ZoomOut computed anew at every frame |
+| `tcmap/control.py` | `SequentialShapeController`: the buffers, the interaction matrix (23), and the control law (24) of Sec. 4.1 |
+| `tcmap/data.py` | the recorded experiments |
+| `tcmap/colors.py` | the colors of the surface maps |
+| `demo.py` | the viewer and the command-line summary |
 
 ```python
-from tcmap.data_loader import load_experiment
-from tcmap.time_consistent import TimeConsistentMapper
+from tcmap import TimeConsistentMapper, Options, load_experiment
 
-# Load data
-sources, target = load_experiment("../data/experiment_data_1.mat")
-
-# Create mapper
-mapper = TimeConsistentMapper(
-    target,
-    n_initial=4,    # Initial basis size (I_initial)
-    n_update=5,     # Reuse sub-matrix size (I_update)
-    n_max=30,       # Maximum basis size (I_max)
-    step=4,         # Refinement step
-)
-
-# Process each frame
-for frame_mesh in sources:
-    frame_mesh.compute_basis(30)
-    T12, T12_consistent, error = mapper.step(frame_mesh)
-    # T12: point-to-point map (source vertex i → target vertex T12[i])
-    # T12_consistent: time-consistent map (indexed by first-frame vertices)
-    # error: shape error ||X - Π·Y||²
+frames, target = load_experiment(5)
+mapper = TimeConsistentMapper(target, Options(I_initial=4, I_update=5, I_max=30, step=4))
+for mesh in frames:
+    out = mapper.step(mesh)     # out.X: tracked points X(k); out.Pi: their images on the target;
+                                # out.E = X(k) - Pi(k) Y (20); out.error = ||e|| (21); out.C = C(I_max, k)
 ```
 
-## Experiments
+## Choices where the paper and the code differ
 
-The `data/` folder contains 5 real experiments from RGB-D acquisitions:
-
-| ID | Object | Description |
-|---|---|---|
-| 1 | Mexican hat | Hat-shaped deformable object |
-| 2 | T-shaped noodle | Elongated deformable object |
-| 3 | Pillow | Soft pillow deformation |
-| 4 | Foam rectangle | Rectangular foam piece |
-| 5 | Foam free-shape | Free-form foam cutout |
-
-## Method summary
-
-1. **Frame k=1**: Initialise functional map via random probing of 2000 diagonal matrices, selecting the one minimising extrinsic alignment error. Refine with ZoomOut.
-
-2. **Frame k>1**:
-   - **Basis tracking**: Map new mesh eigenvectors to previous frame for sign/order consistency.
-   - **Warm start**: Reuse the top-left sub-matrix of the previous functional map.
-   - **Non-isometry**: Dynamically adjust target basis size using area ratio $\rho(k) = \sqrt{A(\mathcal{M}(k))/A(\mathcal{N})}$.
-
-## Citation
-
-```bibtex
-@article{cuiral2025time,
-  title={Time Consistent Surface Mapping for Deformable Object Shape Control},
-  author={Cuiral-Zueco, Ignacio and L{\'o}pez-Nicol{\'a}s, Gonzalo},
-  journal={IEEE Transactions on Automation Science and Engineering},
-  year={2025},
-  doi={10.1109/TASE.2025.3529180}
-}
-```
+- **Tracking (Sec. 3.2).** Read literally, (14)–(15) re-read the basis and the points on the rows that Π^M(k) selects. Π^M(k) is not one-to-one, so tracked points that select the same new point keep the same embedding afterwards and merge. The reference code (`previousstatefmap.m`, `timeconsistentsurfacemapping.m`) instead aligns the basis of every new mesh with the whole map C^M(k) between consecutive meshes, and finds the tracked points by their embedding at k = 1. `Options(tracking="anchored")` (the default) does the latter; `tracking="literal"` applies (13)–(15) as written.
+- **Refinement step.** Algorithm 1 increases I by one; the reference code by 4 (`Cstep`). The default is 4; `Options(step=1)` follows Algorithm 1.
+- **First map (Sec. 3.1).** The paper initializes with ICP and nearest neighbors (10), as here; `initialisefmap.m` instead probes random diagonal functional maps and keeps the one with the smallest extrinsic residual.
+- **Basis.** As in ZoomOut and the code, the constant eigenvector is the first column of the basis.
+- **Control law (23).** Printed with −γI₆; as a Tikhonov regularization it adds γI₆. The rotations of the actions are scaled by a lever (10 cm by default) so that one γ weights translations and rotations alike.

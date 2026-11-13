@@ -1072,3 +1072,21 @@ h5.section-heading {
 .video-ext-link:hover {
     color: var(--color-accent);
 }
+
+/* ─── Link to the interactive demos ──────────────────────── */
+.hero-demo { margin-top: 26px; }
+.hero-demo a {
+    display: inline-block;
+    padding: 10px 20px;
+    border: 1px solid rgba(255, 255, 255, 0.75);
+    border-radius: 999px;
+    color: #fff;
+    font-family: var(--font-sans);
+    font-size: 15px;
+    font-weight: 600;
+    text-decoration: none;
+    background: rgba(255, 255, 255, 0.12);
+    transition: background 160ms ease;
+}
+.hero-demo a:hover { background: rgba(255, 255, 255, 0.24); }
+.nav-links a.nav-demo { font-weight: 600; }

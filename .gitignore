@@ -1,5 +1,7 @@
-# Prompt files
+# Context and prompts (not for distribution)
 prompt.txt
+prompt.md
+context_paper/
 
 # Python
 __pycache__/
@@ -38,3 +40,6 @@ experiment_*_results.png
 # Polyscope / imgui config
 .polyscope.ini
 imgui.ini
+
+# Node.js (the build fetches esbuild with npx)
+node_modules/

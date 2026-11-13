@@ -1,300 +1,156 @@
 #!/usr/bin/env python
-"""Demo: Time-Consistent Surface Mapping on real experiment data.
+"""Time-consistent surface mapping on the recorded experiments of the paper.
 
-Replicates the results from:
-    I. Cuiral-Zueco and G. López-Nicolás, "Time Consistent Surface Mapping for
-    Deformable Object Shape Control," IEEE T-ASE, 2025.
+    python demo.py --experiment 5             3D viewer (Polyscope): play the sequence
+    python demo.py --experiment 1 --no-gui    run the whole sequence, print the summary
+    python demo.py --experiment 3 --no-gui --plot results.png
 
-Usage
------
-    python demo.py                       # run all 5 experiments (live 3D)
-    python demo.py --experiments 1 3     # run experiments 1 and 3
-    python demo.py --no-gui              # headless — print errors only
+For every frame, the mesh perceived in the experiment is mapped to the target mesh by
+the method of the paper (Algorithm 1) and by ZoomOut computed anew at every frame (the
+non-time-consistent maps of Sec. 4.2). The viewer shows both maps as colors, the
+target, and the two shape errors over time (as in Figs. 10-14 of the paper).
+
+I. Cuiral-Zueco and G. López-Nicolás, "Time Consistent Surface Mapping for Deformable
+Object Shape Control," IEEE Transactions on Automation Science and Engineering, 2025.
 """
 
 from __future__ import annotations
 
 import argparse
 import sys
-import time
 from pathlib import Path
 
 import numpy as np
 
-# Ensure the package is importable when running from this directory
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 
-from tcmap.data_loader import load_experiment
-from tcmap.fmap import classic_zoomout
-from tcmap.time_consistent import TimeConsistentMapper, _shape_error
-from tcmap.mesh import Mesh
-from tcmap.visualization import xyz_color
-
-EXPERIMENT_NAMES = {
-    1: "Mexican hat",
-    2: "T-shaped noodle",
-    3: "Pillow",
-    4: "Foam rectangle",
-    5: "Foam free-shape",
-}
-
-DATA_DIR = Path(__file__).resolve().parent.parent / "data"
+from tcmap import EXPERIMENTS, Options, TimeConsistentMapper, load_experiment, ntc_step  # noqa: E402
+from tcmap.colors import pull_colors, reference_colors  # noqa: E402
 
 
-def run_experiment(exp_id: int, gui: bool = True):
-    """Run one experiment and optionally visualise with Polyscope."""
-    mat_path = DATA_DIR / f"experiment_data_{exp_id}.mat"
-    if not mat_path.exists():
-        print(f"  [!] Data file not found: {mat_path}")
-        return
+class Sequence:
+    """The maps of an experiment, computed in order (each frame needs the previous one)."""
 
-    sources, target = load_experiment(mat_path)
-    n_frames = len(sources)
-    print(f"  Loaded {n_frames} frames, target has {target.nv} vertices")
+    def __init__(self, number: int, options: Options):
+        self.frames, self.target_mesh = load_experiment(number)
+        self.mapper = TimeConsistentMapper(self.target_mesh, options)
+        self.ref = reference_colors(self.target_mesh.vertices)
+        self.results = []          # per frame: (Frame, Pi_NTC, ||e_NTC||, seconds NTC)
 
-    NH = 30
-    target.compute_basis(NH)
-    tgt_colors = xyz_color(target)
+    def __len__(self) -> int:
+        return len(self.frames)
 
-    # Horizontal spacing for side-by-side display
-    x_vals = target.vertices[:, 0]
-    x_span = float(x_vals.max() - x_vals.min())
-    offset = x_span * 1.5
+    def compute(self, upto: int) -> None:
+        while len(self.results) <= min(upto, len(self.frames) - 1):
+            out = self.mapper.step(self.frames[len(self.results)])
+            Pi_ntc, E_ntc, seconds = ntc_step(out.retrieved, self.mapper.target, self.mapper.opt)
+            self.results.append((out, Pi_ntc, float(np.sqrt((E_ntc ** 2).sum())), seconds))
 
-    if gui:
-        import polyscope as ps
-        import polyscope.imgui as psim
+    def errors(self):
+        e = np.array([r[0].error for r in self.results])
+        e_ntc = np.array([r[2] for r in self.results])
+        return e, e_ntc
 
-        ps.init()
-        ps.set_ground_plane_mode("shadow_only")
-        ps.set_up_dir("y_up")
-        ps.set_window_size(1600, 900)
 
-        # Register target (static, centred to the right)
-        sm_tgt = ps.register_surface_mesh(
-            "Target N", target.vertices + np.array([offset, 0, 0]),
-            target.faces, smooth_shade=True,
-        )
-        sm_tgt.add_color_quantity("xyz", tgt_colors, enabled=True)
-        sm_tgt.set_edge_width(0.5)
+def summary(seq: Sequence, number: int) -> None:
+    e, e_ntc = seq.errors()
+    t = np.array([r[0].seconds["total"] for r in seq.results[1:]])
+    t_ntc = np.array([r[3] for r in seq.results])
+    sizes = [f.n for f in seq.frames]
+    print(f"Experiment {number} ({EXPERIMENTS[number]}): {len(seq)} frames, {min(sizes)}-{max(sizes)} points per mesh")
+    print(f"  time-consistent  ||e||: {e[0]:.3f} -> {e[-1]:.3f}, largest change between frames {np.abs(np.diff(e)).max():.3f}, "
+          f"{1000 * t.mean():.0f} ms per frame ({1 / t.mean():.0f} Hz)")
+    print(f"  ZoomOut / frame  ||e||: {e_ntc.min():.3f} to {e_ntc.max():.3f}, largest change between frames {np.abs(np.diff(e_ntc)).max():.3f}, "
+          f"{1000 * t_ntc.mean():.0f} ms per frame")
 
-        # Placeholders for source meshes (will be updated each frame)
-        sm_ours = None
-        sm_zo = None
 
-    # ---------- State for computation ----------
-    mapper = TimeConsistentMapper(
-        target, n_initial=4, n_update=5, n_max=NH, step=4,
-        use_slanted_diagonal=True, n_probes=2000,
-    )
-    errors_zo = np.zeros(n_frames)
-    errors_tc = np.zeros(n_frames)
-    times_zo = np.zeros(n_frames)
-    times_tc = np.zeros(n_frames)
+def plot(seq: Sequence, number: int, path: str) -> None:
+    import matplotlib
+    matplotlib.use("Agg")
+    import matplotlib.pyplot as plt
+    e, e_ntc = seq.errors()
+    fig, ax = plt.subplots(figsize=(7, 3.2))
+    ax.plot(e_ntc, color="#1f5fd1", lw=1, ls="--", label=r"ZoomOut every frame, $\|\mathbf{e}_{NTC}\|$")
+    ax.plot(e, color="#d62728", lw=2, label=r"time-consistent, $\|\mathbf{e}\|$")
+    ax.set_xlabel("$k$"); ax.set_ylabel("shape error [m]"); ax.set_xlim(0, len(e) - 1); ax.set_ylim(bottom=0)
+    ax.set_title(f"Experiment {number}: {EXPERIMENTS[number]}")
+    ax.legend(loc="upper right", framealpha=0.92)
+    fig.tight_layout()
+    fig.savefig(path, dpi=150)
+    print(f"  plot written to {path}")
 
-    # ---------- Playback state ----------
-    frame_idx = [0]
-    playing = [True]
-    speed = [1]          # frames to advance per tick
-    computed_up_to = [0]  # how many frames have been computed
 
-    # Pre-allocate storage
-    T12_zo_all = [None] * n_frames
-    T12_tc_all = [None] * n_frames
+def viewer(seq: Sequence, number: int) -> None:
+    import polyscope as ps
+    import polyscope.imgui as psim
 
-    def _compute_frame(i: int):
-        """Compute mappings for frame *i* (if not already done)."""
-        if T12_zo_all[i] is not None:
-            return  # already computed
+    ps.init()
+    ps.set_up_dir("z_up")
+    ps.set_ground_plane_mode("shadow_only")
+    span = np.ptp(seq.target_mesh.vertices, axis=0).max()
+    shift = np.array([1.4 * span, 0.0, 0.0])
+    target = ps.register_surface_mesh("target N", seq.target_mesh.vertices + shift, seq.target_mesh.faces, edge_width=0.6)
+    target.add_color_quantity("reference colors", seq.ref, enabled=True)
+    state = {"k": 0, "play": True, "color": 0}
 
-        src = sources[i]
-        S1 = Mesh(src.vertices.copy(), src.faces.copy())
-        S1.compute_basis(NH)
+    def show(k: int) -> None:
+        seq.compute(k)
+        out, Pi_ntc, _, _ = seq.results[k]
+        tracked = ps.register_surface_mesh("time-consistent: tracked mesh X(k)", out.X, seq.mapper.ref.mesh.faces, edge_width=0.6)
+        perceived = ps.register_surface_mesh("ZoomOut every frame: mesh of frame k", out.retrieved.vertices - shift,
+                                             out.retrieved.mesh.faces, edge_width=0.6)
+        if state["color"] == 0:
+            tracked.add_color_quantity("surface map", pull_colors(seq.ref, out.Pi), enabled=True)
+            perceived.add_color_quantity("surface map", pull_colors(seq.ref, Pi_ntc), enabled=True)
+        else:
+            top = max(np.linalg.norm(out.E, axis=1).max(), 1e-9)
+            tracked.add_scalar_quantity("||e_m||", np.linalg.norm(out.E, axis=1), enabled=True, vminmax=(0, top), cmap="viridis")
+            e_ntc = np.linalg.norm(out.retrieved.vertices - seq.mapper.target.vertices[Pi_ntc], axis=1)
+            perceived.add_scalar_quantity("||e_m||", e_ntc, enabled=True, vminmax=(0, top), cmap="viridis")
 
-        # Classic ZoomOut
-        t0 = time.perf_counter()
-        T12_zo, _ = classic_zoomout(S1, target, n_initial=4, n_max=NH, step=4,
-                                     use_slanted_diagonal=False)
-        times_zo[i] = time.perf_counter() - t0
-        errors_zo[i] = _shape_error(S1, target, T12_zo)
+    def callback() -> None:
+        k = state["k"]
+        psim.TextUnformatted(f"Experiment {number}: {EXPERIMENTS[number]}")
+        psim.TextUnformatted("left: ZoomOut every frame | middle: time-consistent | right: target")
+        _, state["play"] = psim.Checkbox("play", state["play"])
+        changed, k_new = psim.SliderInt("frame k", k, 0, len(seq) - 1)
+        changed_c, state["color"] = psim.Combo("color", state["color"], ["surface map", "point error"])
+        if state["play"] and not changed:
+            k_new = (k + 1) % len(seq)
+        if k_new != k or changed_c or not seq.results:
+            state["k"] = k_new
+            show(k_new)
+        e, e_ntc = seq.errors()
+        psim.PlotLines("||e||", e.astype(np.float32), graph_size=(320, 70))
+        psim.PlotLines("||e_NTC||", e_ntc.astype(np.float32), graph_size=(320, 70))
+        out = seq.results[state["k"]][0]
+        psim.TextUnformatted(f"M_ret(k) = {out.retrieved.n}, ||e|| = {out.error:.3f}, ||e_NTC|| = {seq.results[state['k']][2]:.3f}, "
+                             f"{1000 * out.seconds['total']:.0f} ms")
 
-        # Time-consistent (ours)
-        S1_tc = Mesh(src.vertices.copy(), src.faces.copy())
-        S1_tc.compute_basis(NH)
-        t0 = time.perf_counter()
-        T12_tc, _, err_tc = mapper.step(S1_tc)
-        times_tc[i] = time.perf_counter() - t0
-        errors_tc[i] = err_tc
-
-        T12_zo_all[i] = T12_zo
-        T12_tc_all[i] = T12_tc
-        computed_up_to[0] = i + 1
-
-    def _update_polyscope(i: int):
-        """Update Polyscope meshes for frame *i*."""
-        nonlocal sm_ours, sm_zo
-        src = sources[i]
-
-        # --- Ours (left-centre) ---
-        sm_ours = ps.register_surface_mesh(
-            "Ours - M(k)", src.vertices, src.faces, smooth_shade=True,
-        )
-        mapped_c = tgt_colors[T12_tc_all[i]]
-        sm_ours.add_color_quantity("correspondence", mapped_c, enabled=True)
-        err_v = np.linalg.norm(src.vertices - target.vertices[T12_tc_all[i]], axis=1)
-        sm_ours.add_scalar_quantity("error", err_v, enabled=False, cmap="reds")
-        sm_ours.set_edge_width(0.5)
-
-        # --- ZoomOut (further left) ---
-        sm_zo = ps.register_surface_mesh(
-            "ZoomOut - M(k)", src.vertices - np.array([offset, 0, 0]),
-            src.faces, smooth_shade=True,
-        )
-        mapped_zo_c = tgt_colors[T12_zo_all[i]]
-        sm_zo.add_color_quantity("correspondence", mapped_zo_c, enabled=True)
-        err_zo_v = np.linalg.norm(src.vertices - target.vertices[T12_zo_all[i]], axis=1)
-        sm_zo.add_scalar_quantity("error", err_zo_v, enabled=False, cmap="reds")
-        sm_zo.set_edge_width(0.5)
-
-    if not gui:
-        # Headless: compute all frames, print results
-        for i in range(n_frames):
-            _compute_frame(i)
-            print(f"\r  Frame {i+1:3d}/{n_frames}"
-                  f"  |  ZoomOut err={errors_zo[i]:.4f} ({times_zo[i]:.3f}s)"
-                  f"  |  Ours err={errors_tc[i]:.4f} ({times_tc[i]:.3f}s)"
-                  f"  |  #nodes={sources[i].nv}", end="")
-        print()
-        return
-
-    # ---------- Live Polyscope callback ----------
-    def callback():
-        nonlocal sm_ours, sm_zo
-        i = frame_idx[0]
-
-        # --- UI panel ---
-        psim.SetNextWindowPos((10, 10))
-        psim.SetNextWindowSize((380, 260))
-        psim.Begin("Playback")
-
-        psim.Text(f"Experiment {exp_id}: {EXPERIMENT_NAMES.get(exp_id, '')}")
-        psim.Separator()
-
-        _, playing[0] = psim.Checkbox("Play", playing[0])
-        psim.SameLine()
-        if psim.Button("<"):
-            frame_idx[0] = max(0, i - 1)
-        psim.SameLine()
-        if psim.Button(">"):
-            frame_idx[0] = min(n_frames - 1, i + 1)
-        psim.SameLine()
-        if psim.Button("Reset"):
-            frame_idx[0] = 0
-
-        changed, new_i = psim.SliderInt("Frame", i, 0, n_frames - 1)
-        if changed:
-            frame_idx[0] = new_i
-            i = new_i
-
-        changed_s, new_s = psim.SliderInt("Speed", speed[0], 1, 10)
-        if changed_s:
-            speed[0] = new_s
-
-        # Ensure frame is computed (sequential requirement for TC mapper)
-        while computed_up_to[0] <= i:
-            _compute_frame(computed_up_to[0])
-
-        psim.Separator()
-        psim.Text(f"Frame {i+1}/{n_frames}   |   Nodes: {sources[i].nv}")
-        psim.Text(f"Ours  err: {errors_tc[i]:.4f}   time: {times_tc[i]:.3f}s")
-        psim.Text(f"ZoomOut err: {errors_zo[i]:.4f}   time: {times_zo[i]:.3f}s")
-
-        # Mini error bar
-        if computed_up_to[0] > 1:
-            max_err = max(errors_zo[:computed_up_to[0]].max(),
-                          errors_tc[:computed_up_to[0]].max(), 1e-6)
-            bar_tc = errors_tc[i] / max_err
-            bar_zo = errors_zo[i] / max_err
-            psim.Text(f"Ours:    {'|' * int(bar_tc * 30)}")
-            psim.Text(f"ZoomOut: {'|' * int(bar_zo * 30)}")
-
-        psim.End()
-
-        # Update meshes
-        _update_polyscope(i)
-
-        # Auto-advance
-        if playing[0]:
-            frame_idx[0] = min(n_frames - 1, i + speed[0])
-            if frame_idx[0] >= n_frames - 1:
-                playing[0] = False
-
-    # Precompute first frame so there's something to show immediately
-    _compute_frame(0)
-    _update_polyscope(0)
-
+    show(0)
     ps.set_user_callback(callback)
     ps.show()
-    ps.clear_user_callback()
-
-    # After closing Polyscope, show matplotlib summary
-    _plot_summary(exp_id, sources, errors_zo, errors_tc, times_zo, times_tc,
-                  computed_up_to[0])
 
 
-def _plot_summary(exp_id, sources, errors_zo, errors_tc, times_zo, times_tc, n_computed):
-    """Matplotlib summary plots (saved to PNG)."""
-    import matplotlib.pyplot as plt
-
-    n = n_computed
-    fig, axes = plt.subplots(1, 3, figsize=(15, 4))
-    fig.suptitle(f"Experiment {exp_id}: {EXPERIMENT_NAMES.get(exp_id, '')}")
-
-    ax = axes[0]
-    ax.plot(errors_zo[:n], "b--", alpha=0.6, label="ZoomOut (NTC)")
-    ax.plot(errors_tc[:n], "r-", linewidth=2, label="Ours (TC)")
-    ax.set_xlabel("Frame k")
-    ax.set_ylabel("Shape error")
-    ax.set_title("Shape error")
-    ax.legend()
-    ax.set_ylim(bottom=0)
-
-    ax = axes[1]
-    ax.plot(times_zo[1:n], "b--", alpha=0.6, label="ZoomOut")
-    ax.plot(times_tc[1:n], "r-", linewidth=2, label="Ours")
-    ax.set_xlabel("Frame k")
-    ax.set_ylabel("Time (s)")
-    ax.set_title("Processing time")
-    ax.legend()
-    ax.set_ylim(bottom=0)
-
-    ax = axes[2]
-    ax.plot([sources[i].nv for i in range(n)], "k-")
-    ax.set_xlabel("Frame k")
-    ax.set_ylabel("Mesh nodes")
-    ax.set_title("Mesh size")
-
-    plt.tight_layout()
-    plt.savefig(f"experiment_{exp_id}_results.png", dpi=150)
-    print(f"  Saved experiment_{exp_id}_results.png")
-    plt.show()
-
-
-def main():
-    parser = argparse.ArgumentParser(description="Time-Consistent Surface Mapping Demo")
-    parser.add_argument(
-        "--experiments", nargs="+", type=int, default=[1, 2, 3, 4, 5],
-        help="Experiment IDs to run (1-5)",
-    )
-    parser.add_argument("--no-gui", action="store_true", help="Disable visualisation")
+def main() -> int:
+    parser = argparse.ArgumentParser(description=__doc__.splitlines()[0])
+    parser.add_argument("--experiment", type=int, default=5, choices=sorted(EXPERIMENTS))
+    parser.add_argument("--no-gui", action="store_true", help="compute the whole sequence and print a summary")
+    parser.add_argument("--plot", metavar="PNG", help="with --no-gui: save the two shape errors over time")
+    parser.add_argument("--tracking", default="anchored", choices=["anchored", "literal", "none"])
+    parser.add_argument("--step", type=int, default=4, help="increment of I in the refinements (1 in Algorithm 1, 4 in the code)")
+    parser.add_argument("--Imax", type=int, default=30)
     args = parser.parse_args()
-
-    for exp_id in args.experiments:
-        print(f"\n{'='*60}")
-        print(f"Experiment {exp_id}: {EXPERIMENT_NAMES.get(exp_id, 'Unknown')}")
-        print(f"{'='*60}")
-        run_experiment(exp_id, gui=not args.no_gui)
+    seq = Sequence(args.experiment, Options(I_max=args.Imax, step=args.step, tracking=args.tracking))
+    if args.no_gui:
+        seq.compute(len(seq) - 1)
+        summary(seq, args.experiment)
+        if args.plot:
+            plot(seq, args.experiment, args.plot)
+    else:
+        viewer(seq, args.experiment)
+    return 0
 
 
 if __name__ == "__main__":
-    main()
+    sys.exit(main())
